@@ -1,23 +1,26 @@
-const express=require('express');
-const dotenv=require('dotenv').config();
-const app=express();
+const express = require('express');
+const dotenv = require('dotenv').config();
+const app = express();
+const cors = require('cors');
+const http = require('http');
+const Server = http.createServer(app);
+const { Io } = require('./config/Socket');
+Io(Server);
+const { connection } = require('./config/db');
+const { cloudinary } = require('./config/cloudinary');
 
-app.use(express.json());
+// Middleware
+app.use(cors({
+    origin: 'http://localhost:3000', // or '*' to allow all origins
+    methods: 'GET,POST,PUT,DELETE', // allowed HTTP methods
+    credentials: true // Allow credentials (cookies, headers)
+  }));
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-let products=[
-    {id:1,name:'Product 1',price:100},
-    {id:2,name:'Product 2',price:200},
-    {id:3,name:'Product 3',price:300}
-]
+// Route Middleware
+app.use('/api/users', require('./Routes/userRoute').Routes);
 
-//GET all products
-
-app.get('/products',(req,res)=>{
-    res.send(products);
-});
-
-//GET single product
-
-app.listen(process.env.PORT,()=>{
+app.listen(process.env.PORT, () => {
     console.log(`Server running on port ${process.env.PORT}`);
-})
+});

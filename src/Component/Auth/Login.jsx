@@ -21,11 +21,12 @@ import { ViewIcon, ViewOffIcon, EmailIcon } from '@chakra-ui/icons';
 import axios from 'axios'; // Import Axios
 import EndPoint from './Endpoint'
 import { useAuth } from '../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 const MotionBox = motion(Box);
 
 function Login() {
-  
-  const { user,setUser } = useAuth(); // Use AuthContext hook to handle login
+const navigate=useNavigate();
+  const { user,setUser ,login} = useAuth(); // Use AuthContext hook to handle login
   const [email, setEmail] = useState(''); // State for email
   const [password, setPassword] = useState(''); // State for password
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +40,20 @@ function Login() {
         email,
         password,
       });
-
+  
+      if (response && response.data) {
+        // Ensure the response contains the expected userData and token
+        if (response.data.userData && response.data.token) {
+          login(response.data.userData, response.data.token);
+          
+         
+        } else {
+          console.error('Invalid response data:', response.data);
+        }
+      } else {
+        console.error('Response is not valid:', response);
+      }
+  
       // Show success toast on successful login
       toast({
         title: 'Login Successful!',
@@ -48,8 +62,7 @@ function Login() {
         duration: 3000,
         isClosable: true,
       });
-
-      // Handle further actions such as saving token, redirecting, etc.
+  
     } catch (error) {
       // Show error toast on login failure
       toast({
@@ -61,6 +74,7 @@ function Login() {
       });
     }
   };
+  
 
   return (
     <Container centerContent>

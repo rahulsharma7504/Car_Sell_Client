@@ -1,72 +1,41 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Text,
-  IconButton,
-  HStack,
-  VStack,
-  Button,
-  useDisclosure,
-  Container,
-} from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-const MotionFlex = motion(Flex);
+import { Box, Flex, Text, Container } from '@chakra-ui/react';
+import Navbar from './Navbar'; // Default Navbar for unauthenticated users
+import { useAuth } from '../Context/AuthContext'; // Import your auth context
+import DealerNavbar from './Dealer/DealerNavbar';
+import AdminNavbar from './Admin/AdminNavbar';
+import UserNavbar from './User/UserNavbar';
 
 const Layout = ({ children }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { user } = useAuth(); // Assuming useAuth provides user and loading state
+  const isAuthenticated = user?.isAuthenticated;
+
+  // Determine which Navbar to render based on user role and auth status
+  const renderNavbar = () => {
+
+    if (!isAuthenticated) {
+      return <Navbar />; // Default Navbar for unauthenticated users
+    }
+
+    // Render based on user role
+    const role = user?.data?.user?.role;
+    const isAdmin = user?.data?.user?.is_admin === 1;
+
+    if (isAdmin) {
+      return <AdminNavbar />; // Admin Navbar
+    } else if (role === 'dealer') {
+      return <DealerNavbar />; // Dealer Navbar
+    } else if (role === 'user') {
+      return <UserNavbar />; // Regular User Navbar
+    } else {
+      return <Navbar />; // Fallback to default Navbar for any unexpected role
+    }
+  };
 
   return (
     <Box>
-      <MotionFlex
-        as="header"
-        bg="purple.500"
-        p={4}
-        color="white"
-        align="center"
-        justify="space-between"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Text fontSize="lg" fontWeight="bold">
-          Car Selling App
-        </Text>
-        <IconButton
-          size="md"
-          icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-          aria-label="Open Menu"
-          display={{ md: 'none' }}
-          onClick={isOpen ? onClose : onOpen}
-        />
-        <HStack spacing={8} alignItems="center" display={{ base: 'none', md: 'flex' }}>
-          <Link to="/login">
-            <Button colorScheme="purple">Login</Button>
-          </Link>
-          <Link to="/register">
-            <Button colorScheme="purple">Sign Up</Button>
-          </Link>
-        </HStack>
-      </MotionFlex>
-
-      {isOpen ? (
-        <Box pb={4} display={{ md: 'none' }}>
-          <VStack as="nav" spacing={4}>
-            <Link to="/login">
-              <Button colorScheme="purple" w="full">
-                Login
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button colorScheme="purple" w="full">
-                Sign Up
-              </Button>
-            </Link>
-          </VStack>
-        </Box>
-      ) : null}
+      {/* Render the appropriate Navbar */}
+      {renderNavbar()}
 
       <Container maxW="container.xl" as="main" py={8}>
         {children}

@@ -73,6 +73,7 @@ const Login = async (req, res) => {
   
       // Fetch user from the database
       const [rows] = await connection.query('SELECT * FROM users WHERE email = ?', [email]);
+  
       // Check if user exists
       if (rows.length === 0) {
         return res.status(401).json({ message: 'Invalid credentials' });
@@ -92,23 +93,23 @@ const Login = async (req, res) => {
       }
   
       // Check if user account is active
-      if (user.status !== 'active') {
+      if (user.status !== 'active') { 
         return res.status(401).json({ message: 'User account is not active' });
       }
-      if(user.role== 'dealer'){
-        // Dealer-specific logic
-        const [dealer] = await connection.query('SELECT * FROM dealers WHERE user_id =?', [user.id]);
-      const token = JWT.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            const dealerData={user,dealer} 
-
-        res.status(200).json({ token, dealerData});
+  
+      let userData = { user }; // Initialize user data with basic user info 
+  
+      // Check if the user is a dealer and fetch dealer-specific information
+      if (user.role === 'dealer') {
+        const [dealerRows] = await connection.query('SELECT * FROM dealers WHERE user_id = ?', [user.id]);
+        userData = { user, dealer: dealerRows[0] }; // Merge dealer information
       }
   
       // Generate JWT token
       const token = JWT.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
   
       // Send response with token and user details
-      res.status(200).json({ token, user });
+      return res.status(200).json({ token, userData });
   
     } catch (error) {
       console.error('Error during login:', error);
@@ -116,8 +117,60 @@ const Login = async (req, res) => {
     }
   };
   
+  const allUsers=async(req,res)=>{
+    try {
+      const id=req.params;
+      const [users] = await connection.query('SELECT * FROM users where id not in(?) ',[id]);
+      return res.status(200).json({users}); // Return all users as JSON response
+      
+    } catch (error) {
+      if(error){
+        console.error('Error fetching users:', error);
+        return res.status(500).json({ message: 'Server Error' });
+      }
+      
+      
+    }
+  }
+
+  const deleteUser=async(req,res)=>{
+    try {
+      const { id } = req.params;
+     const del= await connection.query('DELETE FROM users WHERE id =?', [id]);
+      console.log(del)
+      return res.status(200).json({ message: 'User deleted successfully!' }); // Return success message
+    } catch (error) {
+      if(error){
+        console.error('Error fetching users:', error);
+        return res.status(500).json({ message: 'Server Error' });
+      }
+      
+      
+    }
+  }
+
+  const updateUser=async(req,res)=>{
+    try {
+      const { id } = req.params;
+      const { username, email, status } = req.body;
+      
+     const update= await connection.query('UPDATE users SET username=?, email=?, status=? WHERE id =?', [username, email, status, id]);
+      console.log(update)
+      return res.status(200).json({ message: 'User updated successfully!' }); // Return success message
+    } catch (error) {
+      if(error){
+        console.error('Error fetching users:', error);
+        return res.status(500).json({ message: 'Server Error' });
+      }
+      
+      
+    }
+  }
 
 module.exports = {
     register,
-    Login
+    Login,
+    allUsers,
+    deleteUser,
+    updateUser
 };

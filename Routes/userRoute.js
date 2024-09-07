@@ -20,5 +20,8 @@ const upload = multer({ storage: storage });
 
 router.post('/register',upload.single('image'), userController.register);
 router.post('/login', userController.Login);
+router.get('/all-users/:id', userController.allUsers);
+router.delete('/delete-user/:id', userController.deleteUser);
+router.put('/update-user/:id', userController.updateUser);
 
 module.exports = { Routes: router };

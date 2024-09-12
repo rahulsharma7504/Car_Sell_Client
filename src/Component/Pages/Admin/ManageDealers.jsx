@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Table,
@@ -25,6 +25,9 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { EditIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import Endpoint from '../../Auth/Endpoint';
+import axios from 'axios';
+import { useMatrix } from './MetrixContext';
 
 // Mock dealer data
 const mockDealers = [
@@ -34,7 +37,8 @@ const mockDealers = [
 ];
 
 function ManageDealers() {
-  const [dealers, setDealers] = useState(mockDealers);
+  const { setTotelDealer } = useMatrix();
+  const [dealers, setDealers] = useState([]);
   const [selectedDealer, setSelectedDealer] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,21 +50,39 @@ function ManageDealers() {
     onOpen();
   };
 
-  const handleApprove = (id) => {
-    setDealers(dealers.map(dealer => dealer.id === id ? { ...dealer, status: 'Verified' } : dealer));
-    toast({ title: 'Dealer approved.', status: 'success' });
-  };
+  useEffect(()=>{
+    getDealers();
+  },[])
+  const getDealers=async()=>{
+    try {
+      const res = await axios.get(`${Endpoint.URL}/users/all-dealers`);
+      console.log(res.data.dealers);
+      setDealers(res.data.dealers);  
+      setTotelDealer(res.data.dealers.length);
 
-  const handleReject = (id) => {
-    setDealers(dealers.map(dealer => dealer.id === id ? { ...dealer, status: 'Rejected' } : dealer));
-    toast({ title: 'Dealer rejected.', status: 'error' });
-  };
+    } catch (error) {
+      toast({ title: 'Error fetching dealers.', status: 'error' });
+    }
+  }
 
-  const handleSave = () => {
-    // Save updated dealer details
+  
+
+  const handleSave = async() => {
+    const updatedData=
+      {
+        id: selectedDealer.id,
+        email: selectedDealer.email,
+        contact_number: selectedDealer.contact_number,
+        verification_status: selectedDealer.verification_status,
+        status: selectedDealer.status
+      }
+      console.log(updatedData)
+      
+   const res= await axios.put(`${Endpoint.URL}/users/update-dealer`,updatedData);
+    getDealers();
     setEditMode(false);
     onClose();
-    toast({ title: 'Dealer details updated.', status: 'success' });
+    toast({ title: 'Dealer details updated.', status:'success' });
   };
 
   return (
@@ -84,28 +106,13 @@ function ManageDealers() {
         <Tbody>
           {dealers.map(dealer => (
             <Tr key={dealer.id}>
-              <Td>{dealer.name}</Td>
+              <Td>{dealer.username}</Td>
               <Td>{dealer.email}</Td>
               <Td>{dealer.status}</Td>
-              <Td>{dealer.contact}</Td>
-              <Td>{dealer.license}</Td>
+              <Td>{dealer.contact_number}</Td>
+              <Td>{dealer.verification_status}</Td>
               <Td>
-                <Button
-                  colorScheme="green"
-                  size="sm"
-                  onClick={() => handleApprove(dealer.id)}
-                  mr={2}
-                >
-                  <CheckIcon />
-                </Button>
-                <Button
-                  colorScheme="red"
-                  size="sm"
-                  onClick={() => handleReject(dealer.id)}
-                  mr={2}
-                >
-                  <CloseIcon />
-                </Button>
+               
                 <Button
                   colorScheme="blue"
                   size="sm"
@@ -126,14 +133,7 @@ function ManageDealers() {
           <ModalHeader>{editMode ? 'Edit Dealer' : 'Dealer Details'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <FormControl id="name" mb={4}>
-              <FormLabel>Name</FormLabel>
-              <Input
-                type="text"
-                value={selectedDealer?.name || ''}
-                onChange={(e) => setSelectedDealer({ ...selectedDealer, name: e.target.value })}
-              />
-            </FormControl>
+            
             <FormControl id="email" mb={4}>
               <FormLabel>Email</FormLabel>
               <Input
@@ -146,18 +146,30 @@ function ManageDealers() {
               <FormLabel>Contact</FormLabel>
               <Input
                 type="text"
-                value={selectedDealer?.contact || ''}
-                onChange={(e) => setSelectedDealer({ ...selectedDealer, contact: e.target.value })}
+                value={selectedDealer?.contact_number || ''}
+                onChange={(e) => setSelectedDealer({ ...selectedDealer, contact_number: e.target.value })}
               />
             </FormControl>
             <FormControl id="license" mb={4}>
               <FormLabel>License Verification</FormLabel>
               <Select
-                value={selectedDealer?.license || ''}
-                onChange={(e) => setSelectedDealer({ ...selectedDealer, license: e.target.value })}
+                value="verification"
+                onChange={(e) => setSelectedDealer({ ...selectedDealer, verification_status: e.target.value })}
               >
-                <option value="Verified">Verified</option>
-                <option value="Not Verified">Not Verified</option>
+                <option value="verification">Verification</option>
+                <option value="Reject">Reject</option>
+                <option value="Verified"> Verified</option>
+              </Select>
+            </FormControl>
+            <FormControl id="status" mb={4}>
+              <FormLabel>Status</FormLabel>
+              <Select
+                value={'Status'}
+                onChange={(e) => setSelectedDealer({ ...selectedDealer, status: e.target.value })}
+              >
+                <option value="Status">Select Status</option>
+                <option value="inActive"> In-Active</option>
+                <option value="active"> Active</option>
               </Select>
             </FormControl>
           </ModalBody>

@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 const MotionBox = motion(Box);
 
 function Login() {
+
 const navigate=useNavigate();
   const { user,setUser ,login} = useAuth(); // Use AuthContext hook to handle login
   const [email, setEmail] = useState(''); // State for email
@@ -43,8 +44,8 @@ const navigate=useNavigate();
   
       if (response && response.data) {
         // Ensure the response contains the expected userData and token
-        if (response.data.userData && response.data.token) {
-          login(response.data.userData, response.data.token);
+        if (response.data && response.data.token) {
+          login(response.data, response.data.token);
           
          
         } else {

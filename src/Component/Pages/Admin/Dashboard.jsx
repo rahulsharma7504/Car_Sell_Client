@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Box, SimpleGrid, Heading, Text, useDisclosure, Collapse, Button } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-
+import {useMatrix} from '../Admin/MetrixContext'
 const MotionBox = motion(Box);
-
 function Dashboard() {
+  const { totelUser, totelDealer, totelCar, totelPending, setTotelUser, setTotelDealer, setTotelCar, setTotelPending }=useMatrix()
+
+
   const [metrics, setMetrics] = useState({
     totalUsers: 0,
     totalDealers: 0,
@@ -44,7 +46,7 @@ function Dashboard() {
           transition={{ duration: 0.5 }}
         >
           <Heading size="md" mb={2}>Total Users</Heading>
-          <Text fontSize="2xl" color="purple.600">{metrics.totalUsers}</Text>
+          <Text fontSize="2xl" color="purple.600">{totelUser}</Text>
         </MotionBox>
 
         {/* Total Dealers Box */}
@@ -59,7 +61,7 @@ function Dashboard() {
           transition={{ duration: 0.5 }}
         >
           <Heading size="md" mb={2}>Total Dealers</Heading>
-          <Text fontSize="2xl" color="purple.600">{metrics.totalDealers}</Text>
+          <Text fontSize="2xl" color="purple.600">{totelDealer}</Text>
         </MotionBox>
 
         {/* Total Car Listings Box */}
@@ -74,7 +76,7 @@ function Dashboard() {
           transition={{ duration: 0.5 }}
         >
           <Heading size="md" mb={2}>Total Car Listings</Heading>
-          <Text fontSize="2xl" color="purple.600">{metrics.totalCarListings}</Text>
+          <Text fontSize="2xl" color="purple.600">{totelCar}</Text>
         </MotionBox>
 
         {/* Pending Dealer Approvals Box */}
@@ -89,7 +91,7 @@ function Dashboard() {
           transition={{ duration: 0.5 }}
         >
           <Heading size="md" mb={2}>Pending Dealer Approvals</Heading>
-          <Text fontSize="2xl" color="purple.600">{metrics.pendingDealerApprovals}</Text>
+          <Text fontSize="2xl" color="purple.600">{totelPending}</Text>
         </MotionBox>
       </SimpleGrid>
 

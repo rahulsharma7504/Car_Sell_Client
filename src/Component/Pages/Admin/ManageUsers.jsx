@@ -28,7 +28,9 @@ import { EditIcon, DeleteIcon, ViewIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 import EndPoint from '../../Auth/Endpoint';
 import {useAuth} from '../../Context/AuthContext'
+import { useMatrix } from './MetrixContext';
 function ManageUsers() {
+  const { setTotelUser } = useMatrix(); // Get matrix data from context
   const { user } = useAuth();  // Get user data from context
   const [users, setUsers] = useState([]);  // Initial state as empty array
   const [search, setSearch] = useState('');
@@ -46,6 +48,7 @@ function ManageUsers() {
       const res = await axios.get(`${EndPoint.URL}/users/all-users/${user.data.user.id}`);
       if (res.status === 200) {
         setUsers(res.data.users);
+        setTotelUser(res.data.users.length);  // Update matrix data
       }
     } catch (error) {
       toast({ title: 'Error fetching users.', status: 'error' });
@@ -175,11 +178,12 @@ function ManageUsers() {
             <FormControl id="status" mb={4}>
               <FormLabel>Status</FormLabel>
               <Select
-                value={selectedUser?.status || ''}
+                value={'status'}
                 onChange={(e) => setSelectedUser({ ...selectedUser, status: e.target.value })}
               >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="Status">Status</option>
+                <option value="inActive">Inactive</option>
+                <option value="active">Active</option>
               </Select>
             </FormControl>
           </ModalBody>

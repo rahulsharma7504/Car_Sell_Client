@@ -13,7 +13,7 @@ import Dealer from './Component/Pages/Dealer/Dealer';
 import User from './Component/Pages/User/User';
 import ProtectedRoute from './Component/Auth/ProtectedRoute';
 import ManageUser from './Component/Pages/Admin/ManageUsers';
-
+import MatrixProvider from './Component/Pages/Admin/MetrixContext'
 function App() {
   const { user } = useAuth;
 
@@ -31,7 +31,9 @@ function App() {
             <Route
               path="/admin-dashboard"
               element={
+
                 <ProtectedRoute >
+
                   {'Admin'}
                   {/* Admin specific routes */}
                 </ProtectedRoute>
@@ -40,19 +42,26 @@ function App() {
             <Route path="/manage-users" element={  <ProtectedRoute >{'ManageUsers'}</ProtectedRoute>}/>
             <Route path="/manage-dealers" element={  <ProtectedRoute >{'ManageDealers'}</ProtectedRoute>}/>
             <Route path="/car-listings" element={  <ProtectedRoute >{'CarListings'}</ProtectedRoute>}/>
-            <Route
-              path="/dealer-dashboard"
-              element={
-                <ProtectedRoute >
-                  {'Dealer'}
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/user-dashboard"
+            
+            {/* Dealers Route */}
+            <Route path="/dealer-dashboard"element={<ProtectedRoute >{'Dealer'}</ProtectedRoute>}/>
+            <Route path="/manage-listings"element={<ProtectedRoute >{'ManageCars'}</ProtectedRoute>}/>
+            <Route path="/add-new-car"element={<ProtectedRoute >{'AddCar'}</ProtectedRoute>}/>
+            <Route path="/test-drive-requests"element={<ProtectedRoute >{'TestDrive'}</ProtectedRoute>}/>
+            <Route path="/sales-orders"element={<ProtectedRoute >{'SalesOrder'}</ProtectedRoute>}/>
+            <Route path="/Profile"element={<ProtectedRoute >{'Profile'}</ProtectedRoute>}/>
+
+            <Route path="/user-dashboard"
               element={
                 <ProtectedRoute>
                   {'User'}
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/car-detail"
+              element={
+                <ProtectedRoute>
+                  {'car-detail'}
                 </ProtectedRoute>
               }
             />

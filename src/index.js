@@ -4,13 +4,18 @@ import './index.css';
 import App from './App';
 import { ChakraProvider } from '@chakra-ui/react'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import MatrixProvider from './Component/Pages/Admin/MetrixContext'
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
     <ChakraProvider>
-    <App />
-
+        <MatrixProvider>
+            <App />
+        </MatrixProvider>
     </ChakraProvider>
+        
+
 );
 
 // If you want to start measuring performance in your app, pass a function

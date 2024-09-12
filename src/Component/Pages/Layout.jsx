@@ -18,14 +18,15 @@ const Layout = ({ children }) => {
     }
 
     // Render based on user role
-    const role = user?.data?.user?.role;
-    const isAdmin = user?.data?.user?.is_admin === 1;
+    const User = user?.data?.user;
+    const Dealer = user?.data?.dealer;
+    const isAdmin = user?.data?.user?.role== 'admin';
 
     if (isAdmin) {
       return <AdminNavbar />; // Admin Navbar
-    } else if (role === 'dealer') {
+    } else if (Dealer) {
       return <DealerNavbar />; // Dealer Navbar
-    } else if (role === 'user') {
+    } else if (User) {
       return <UserNavbar />; // Regular User Navbar
     } else {
       return <Navbar />; // Fallback to default Navbar for any unexpected role

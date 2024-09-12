@@ -39,13 +39,13 @@ export const AuthProvider = ({ children }) => {
     });
     const { user, dealer } = userData;
     if (user) {
-      if (user.is_admin === 1) {
+      if (user.role === 'admin') {
         navigate('/admin-dashboard');
-      } else if (user.is_admin === 0) {
-        navigate(dealer ? '/dealer-dashboard' : '/user-dashboard');
       } else {
         navigate('/user-dashboard');
       }
+    }else if(dealer){
+      navigate('/dealer-dashboard');
     }
 
 

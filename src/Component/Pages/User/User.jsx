@@ -109,10 +109,7 @@ const CarSearch = () => {
       {/* Search Filters */}
       <Stack spacing={4}>
         <Input
-          placeholder="Search by keyword (e.g., 'Sedan')"
-          size="lg"
-          borderColor="teal.500"
-        />
+          placeholder="Search by keyword (e.g., 'Sedan')" size="lg" borderColor="teal.500"/>
 
         <Flex flexDirection={{ base: 'column', md: 'row' }} gap={4}>
           <Select

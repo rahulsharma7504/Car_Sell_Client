@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
@@ -25,41 +25,38 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import EndPoint from '../../Auth/Endpoint';
+import axios from 'axios';
+import { useDealer } from './DealerContext';
 
-const initialCars = [
-  {
-    id: 1,
-    image: 'https://via.placeholder.com/100',
-    name: 'Toyota Corolla',
-    model: '2021',
-    price: '$20,000',
-    status: 'Active',
-  },
-  {
-    id: 2,
-    image: 'https://via.placeholder.com/100',
-    name: 'Honda Civic',
-    model: '2020',
-    price: '$18,000',
-    status: 'Pending',
-  },
-  // Add more car objects as needed
-];
 
 function ManageListings() {
-  const [cars, setCars] = useState(initialCars);
+  const { totalCars, setTotalCars } = useDealer();
+  // const [cars, setCars] = useState(initialCars);
   const [filterStatus, setFilterStatus] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingCar, setEditingCar] = useState(null);
   const toast = useToast();
+
+
+  
+// Function to fetch total cars for a dealer
+
+
+
+
+
+
+
 
   const handleEdit = (car) => {
     setEditingCar(car);
     onOpen();
   };
 
+  console.log()
   const handleDelete = (carId) => {
-    setCars(cars.filter(car => car.id !== carId));
+    setTotalCars(totalCars.filter(car => car.id !== carId));
     toast({
       title: "Car listing deleted.",
       status: "success",
@@ -73,8 +70,8 @@ function ManageListings() {
   };
 
   const filteredCars = filterStatus
-    ? cars.filter(car => car.status === filterStatus)
-    : cars;
+    ? totalCars.filter(car => car.status === filterStatus)
+    : totalCars;
 
   return (
     <Box p={5}>
@@ -100,9 +97,10 @@ function ManageListings() {
           {filteredCars.map((car) => (
             <Tr key={car.id}>
               <Td>
-                <Image src={car.image} alt={car.name} boxSize="100px" />
+                <h6></h6>
+                <Image src={JSON.parse(car.image_url)[1]} alt={car.name} boxSize="100px" />
               </Td>
-              <Td>{`${car.name} (${car.model})`}</Td>
+              <Td>{`${car.name}`}</Td>
               <Td>{car.price}</Td>
               <Td>{car.status}</Td>
               <Td>

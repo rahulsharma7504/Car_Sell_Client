@@ -5,16 +5,20 @@ import App from './App';
 import { ChakraProvider } from '@chakra-ui/react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MatrixProvider from './Component/Pages/Admin/MetrixContext'
+import DealerProvider from './Component/Pages/Dealer/DealerContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
     <ChakraProvider>
         <MatrixProvider>
-            <App />
+            <DealerProvider>
+                <App />
+            </DealerProvider>
         </MatrixProvider>
+
     </ChakraProvider>
-        
+
 
 );
 

@@ -14,6 +14,7 @@ import User from './Component/Pages/User/User';
 import ProtectedRoute from './Component/Auth/ProtectedRoute';
 import ManageUser from './Component/Pages/Admin/ManageUsers';
 import MatrixProvider from './Component/Pages/Admin/MetrixContext'
+import DealerProvider from './Component/Pages/Dealer/DealerContext';
 function App() {
   const { user } = useAuth;
 

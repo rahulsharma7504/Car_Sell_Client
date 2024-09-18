@@ -28,6 +28,7 @@ import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import EndPoint from '../../Auth/Endpoint';
 import axios from 'axios';
 import { useDealer } from './DealerContext';
+import { type } from '@testing-library/user-event/dist/type';
 
 
 function ManageListings() {
@@ -89,6 +90,8 @@ function ManageListings() {
             <Th>Car Image</Th>
             <Th>Car Name/Model</Th>
             <Th>Price</Th>
+            <Th>Year</Th>
+            <Th>Features</Th>
             <Th>Status</Th>
             <Th>Actions</Th>
           </Tr>
@@ -102,6 +105,15 @@ function ManageListings() {
               </Td>
               <Td>{`${car.name}`}</Td>
               <Td>{car.price}</Td>
+              <Td>{car.year}</Td>
+              <Td><select name="" id=""> 
+              {
+               JSON.parse(car.features).map((i)=>{
+                 return <option value={i}>{i}</option>
+  
+               })          
+                }
+                </select></Td>
               <Td>{car.status}</Td>
               <Td>
                 <Stack direction="row" spacing={4}>
@@ -133,12 +145,9 @@ function ManageListings() {
             <ModalBody>
               {/* Include a form here to edit car details */}
               <Input placeholder="Car Name" defaultValue={editingCar.name} mb={3} />
-              <Input placeholder="Car Model" defaultValue={editingCar.model} mb={3} />
+              <Input placeholder="Car Year" defaultValue={editingCar.year} mb={3} />
               <Input placeholder="Price" defaultValue={editingCar.price} mb={3} />
-              <Select placeholder="Status" defaultValue={editingCar.status}>
-                <option value="Active">Active</option>
-                <option value="Pending">Pending</option>
-              </Select>
+              
             </ModalBody>
             <ModalFooter>
               <Button colorScheme="blue" mr={3} onClick={onClose}>

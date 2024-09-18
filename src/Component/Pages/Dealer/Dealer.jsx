@@ -12,11 +12,12 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-
+import { useDealer } from './DealerContext';
 const Dashboard = () => {
+  const { totalCars } = useDealer();
   // Example data
   const [stats, setStats] = useState({
-    totalCarListings: 120,
+    totalCarListings: totalCars.length,
     testDriveRequests: { pending: 5, completed: 25 },
     sales: 85,
     pendingApprovals: 10,

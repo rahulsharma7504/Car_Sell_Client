@@ -28,7 +28,6 @@ const DealerProvider = ({ children }) => {
       TotalCar();
     },[]);
     
-    console.log(totalCars)
 
     // Return the context provider with values
     return (

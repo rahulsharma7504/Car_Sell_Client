@@ -28,42 +28,81 @@ import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import EndPoint from '../../Auth/Endpoint';
 import axios from 'axios';
 import { useDealer } from './DealerContext';
-import { type } from '@testing-library/user-event/dist/type';
-
 
 function ManageListings() {
   const { totalCars, setTotalCars } = useDealer();
-  // const [cars, setCars] = useState(initialCars);
   const [filterStatus, setFilterStatus] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingCar, setEditingCar] = useState(null);
+  const [edititems, setEditItems] = useState({
+    name: '',
+    year: '',
+    price: ''
+  });
+
   const toast = useToast();
-
-
-  
-// Function to fetch total cars for a dealer
-
-
-
-
-
-
-
 
   const handleEdit = (car) => {
     setEditingCar(car);
+    setEditItems({
+      name: car.name,
+      year: car.year,
+      price: car.price
+    });
     onOpen();
   };
 
-  console.log()
-  const handleDelete = (carId) => {
-    setTotalCars(totalCars.filter(car => car.id !== carId));
-    toast({
-      title: "Car listing deleted.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+  const handleSave = async () => {
+    try {
+      const res = await axios.put(`${EndPoint.URL}/dealers/edit-car/${editingCar.id}`, edititems);
+
+      if (res.status === 200) {
+        // Update the totalCars state with the updated car
+        setTotalCars((prevCars) =>
+          prevCars.map((car) =>
+            car.id === editingCar.id ? { ...car, ...edititems } : car
+          )
+        );
+        setEditingCar(null);
+        onClose();
+        toast({
+          title: res.data.message,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Failed to update the car listing',
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleDelete = async(carId) => {
+
+    const res=await axios.delete(`${EndPoint.URL}/dealers/delete-car/${carId}`);
+    if(res.status===200){
+      // Update the totalCars state with the deleted car
+      setTotalCars(prevCars => prevCars.filter(car => car.id!== carId));
+      toast({
+        title: res.data.message,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    }else{
+      toast({
+        title: 'Failed to delete the car listing',
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+
   };
 
   const handleFilter = (e) => {
@@ -100,20 +139,18 @@ function ManageListings() {
           {filteredCars.map((car) => (
             <Tr key={car.id}>
               <Td>
-                <h6></h6>
                 <Image src={JSON.parse(car.image_url)[1]} alt={car.name} boxSize="100px" />
               </Td>
               <Td>{`${car.name}`}</Td>
               <Td>{car.price}</Td>
               <Td>{car.year}</Td>
-              <Td><select name="" id=""> 
-              {
-               JSON.parse(car.features).map((i)=>{
-                 return <option value={i}>{i}</option>
-  
-               })          
-                }
-                </select></Td>
+              <Td>
+                <Select>
+                  {JSON.parse(car.features).map((feature, index) => (
+                    <option key={index} value={feature}>{feature}</option>
+                  ))}
+                </Select>
+              </Td>
               <Td>{car.status}</Td>
               <Td>
                 <Stack direction="row" spacing={4}>
@@ -143,14 +180,27 @@ function ManageListings() {
             <ModalHeader>Edit Car Details</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              {/* Include a form here to edit car details */}
-              <Input placeholder="Car Name" defaultValue={editingCar.name} mb={3} />
-              <Input placeholder="Car Year" defaultValue={editingCar.year} mb={3} />
-              <Input placeholder="Price" defaultValue={editingCar.price} mb={3} />
-              
+              <Input
+                placeholder="Car Name"
+                value={edititems.name}
+                onChange={(e) => setEditItems({ ...edititems, name: e.target.value })}
+                mb={3}
+              />
+              <Input
+                placeholder="Car Year"
+                value={edititems.year}
+                onChange={(e) => setEditItems({ ...edititems, year: e.target.value })}
+                mb={3}
+              />
+              <Input
+                placeholder="Price"
+                value={edititems.price}
+                onChange={(e) => setEditItems({ ...edititems, price: e.target.value })}
+                mb={3}
+              />
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
+              <Button colorScheme="blue" onClick={handleSave}>
                 Save
               </Button>
               <Button variant="ghost" onClick={onClose}>Cancel</Button>

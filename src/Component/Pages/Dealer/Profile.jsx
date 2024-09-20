@@ -16,7 +16,10 @@ import {
   ModalBody,
   ModalFooter,
 } from '@chakra-ui/react';
+import axios from 'axios';
+import EndPoint from '../../Auth/Endpoint';
 
+import { useNavigate } from 'react-router-dom';
 const initialProfile = {
   name: 'John Doe',
   email: 'john.doe@example.com',
@@ -26,8 +29,10 @@ const initialProfile = {
 };
 
 function Profile() {
-  const [profile, setProfile] = useState(initialProfile);
-  const [editProfile, setEditProfile] = useState(initialProfile);
+  const navigate=useNavigate()
+  const dealerData=JSON.parse(localStorage.getItem('userData')).dealer;
+  const [profile, setProfile] = useState(dealerData);
+  const [editProfile, setEditProfile] = useState(dealerData);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -37,14 +42,30 @@ function Profile() {
     setEditProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdate = () => {
-    setProfile(editProfile);
-    toast({
-      title: 'Profile updated.',
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
+  const handleUpdate = async() => {
+    try {
+      setProfile(editProfile);
+    const res= await axios.post(`${EndPoint.URL}/dealers/profile/${dealerData.id}`,profile);
+    if(res.status===200){
+      toast({
+        title: res.data?.message,
+        status: 'success',
+        duration: 2000, 
+        isClosable: true,
+      });
+      navigate('/dealer-dashboard')
+    }
+    } catch (error) {
+      toast({
+        title: 'Failed to update profile',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+      
+    }
+    
+   
   };
 
   const handlePasswordChange = () => {
@@ -65,8 +86,8 @@ function Profile() {
           <FormLabel>Name</FormLabel>
           <Input
             type="text"
-            name="name"
-            value={editProfile.name}
+            name="username"
+            value={editProfile.username}
             onChange={handleChange}
           />
         </FormControl>
@@ -83,8 +104,8 @@ function Profile() {
           <FormLabel>Phone Number</FormLabel>
           <Input
             type="text"
-            name="phoneNumber"
-            value={editProfile.phoneNumber}
+            name="contact_number"
+            value={editProfile.contact_number}
             onChange={handleChange}
           />
         </FormControl>
@@ -113,18 +134,18 @@ function Profile() {
           <ModalCloseButton />
           <ModalBody>
             <FormControl id="newPassword">
-              <FormLabel>New Password</FormLabel>
+              <FormLabel>Old Password</FormLabel>
               <Input
                 type="password"
-                placeholder="Enter new password"
+                placeholder="Enter Old password"
                 // Implement change password logic here
               />
             </FormControl>
             <FormControl id="confirmPassword" mt={4}>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel>New Password</FormLabel>
               <Input
                 type="password"
-                placeholder="Confirm new password"
+                placeholder="Enter new password"
                 // Implement change password logic here
               />
             </FormControl>

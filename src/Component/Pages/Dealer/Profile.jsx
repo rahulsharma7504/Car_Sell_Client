@@ -20,19 +20,17 @@ import axios from 'axios';
 import EndPoint from '../../Auth/Endpoint';
 
 import { useNavigate } from 'react-router-dom';
-const initialProfile = {
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  phoneNumber: '+1234567890',
-  address: '123 Main St, Springfield, USA',
-  password: '********', // Password should be handled securely
-};
+
 
 function Profile() {
   const navigate=useNavigate()
   const dealerData=JSON.parse(localStorage.getItem('userData')).dealer;
   const [profile, setProfile] = useState(dealerData);
   const [editProfile, setEditProfile] = useState(dealerData);
+  const [password, setPassword] = useState({
+    currentPassword: '',
+    newPassword: '',
+  });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -44,8 +42,8 @@ function Profile() {
 
   const handleUpdate = async() => {
     try {
-      setProfile(editProfile);
-    const res= await axios.post(`${EndPoint.URL}/dealers/profile/${dealerData.id}`,profile);
+      // setProfile(editProfile);
+    const res= await axios.put(`${EndPoint.URL}/dealers/profile/${editProfile.id}`,editProfile);
     if(res.status===200){
       toast({
         title: res.data?.message,
@@ -68,14 +66,27 @@ function Profile() {
    
   };
 
-  const handlePasswordChange = () => {
-    // Implement password change logic here
-    toast({
-      title: 'Password changed successfully.',
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
+  const handlePasswordChange =async () => {
+    setIsChangingPassword(true);
+
+    const res= await axios.put(`${EndPoint.URL}/dealers/change-password/${dealerData.id}`,password);
+    if(res.status===200){
+      toast({
+        title: res.data?.message,
+        status:'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: 'Failed to change password',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+    setPassword({ currentPassword: '', newPassword: '' });
+
     setIsChangingPassword(false);
   };
 
@@ -137,15 +148,21 @@ function Profile() {
               <FormLabel>Old Password</FormLabel>
               <Input
                 type="password"
+                name='currentPassword'
                 placeholder="Enter Old password"
                 // Implement change password logic here
+                onChange={(e)=>setPassword({...password, currentPassword: e.target.value})}
+
               />
             </FormControl>
             <FormControl id="confirmPassword" mt={4}>
               <FormLabel>New Password</FormLabel>
               <Input
                 type="password"
+                name='newPassword'
+
                 placeholder="Enter new password"
+                onChange={(e)=>setPassword({...password, newPassword: e.target.value})}
                 // Implement change password logic here
               />
             </FormControl>

@@ -51,6 +51,7 @@ function App() {
             <Route path="/test-drive-requests"element={<ProtectedRoute >{'TestDrive'}</ProtectedRoute>}/>
             <Route path="/sales-orders"element={<ProtectedRoute >{'SalesOrder'}</ProtectedRoute>}/>
             <Route path="/Profile"element={<ProtectedRoute >{'Profile'}</ProtectedRoute>}/>
+            <Route path="/chat"element={<ProtectedRoute >{'Chatting'}</ProtectedRoute>}/>
 
             <Route path="/user-dashboard"
               element={

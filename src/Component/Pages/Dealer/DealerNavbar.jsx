@@ -14,7 +14,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import {Link, useNavigate} from 'react-router-dom'
-import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, AddIcon, ChatIcon } from '@chakra-ui/icons';
 import { FaCar, FaHome, FaCalendarAlt, FaShoppingCart, FaUser, FaExclamationCircle, FaSignOutAlt } from 'react-icons/fa';
 const Links = [
   { name: 'Dashboard', icon: FaHome, href: '/dealer-dashboard' },
@@ -22,7 +22,8 @@ const Links = [
   { name: 'Add New Car', icon: AddIcon, href: '/add-new-car' },
   { name: 'Test Drive Requests', icon: FaCalendarAlt, href: '/test-drive-requests' },
   { name: 'Sales & Orders', icon: FaShoppingCart, href: '/sales-orders' },
-  { name: 'Profile', icon: FaUser, href: '/profile' }
+  { name: 'Profile', icon: FaUser, href: '/profile' },
+  { name: 'Notification', icon: ChatIcon, href: '/chat' }
 ];
 
 const NavLink = ({ link }) => (

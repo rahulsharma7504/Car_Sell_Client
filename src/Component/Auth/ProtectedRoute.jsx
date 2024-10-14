@@ -13,6 +13,7 @@ import TestDrive from '../Pages/Dealer/TestDrive';
 import SalesOrder from '../Pages/Dealer/SalesOrder';
 import Profile from '../Pages/Dealer/Profile';
 import CarDetailPage from '../Pages/User/CarDetail';
+import Chatting from '../Pages/Dealer/Chatting';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -60,6 +61,8 @@ function ProtectedRoute({ children }) {
       return <SalesOrder />;
     } else if (children === 'Profile') {
       return <Profile />;
+    }else if(children === 'Chatting'){
+      return <Chatting />; // Placeholder for chatting component
     }
   }
 

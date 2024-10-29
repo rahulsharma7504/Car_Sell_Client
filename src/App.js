@@ -60,13 +60,15 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/car-detail"
+            <Route path="/car-detail/:id"
               element={
                 <ProtectedRoute>
                   {'car-detail'}
                 </ProtectedRoute>
               }
             />
+            <Route path="/profle"element={<ProtectedRoute >{'Profile'}</ProtectedRoute>}/>
+
 
             {/* 404 Route - should be last */}
             <Route path="*" element={<NotFound />} />

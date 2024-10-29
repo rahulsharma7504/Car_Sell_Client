@@ -13,7 +13,10 @@ import {
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import {useAuth} from '../../Context/AuthContext'
+import { Navigate, useNavigate } from 'react-router-dom';
 const Navbar = () => {
+  const navigate = useNavigate();
+  
   const {user,logout} =useAuth()
   const [userData,setUserData]=useState(null);
   const { isOpen, onToggle } = useDisclosure();
@@ -42,10 +45,7 @@ const Navbar = () => {
           display={{ base: 'none', md: 'flex' }}
           ml="auto" // Align links to the right
         >
-          <Button variant="link" color="white" _hover={{ color: "teal.300" }}>
-            Test Drives
-          </Button>
-          <Button variant="link" color="white" _hover={{ color: "teal.300" }}>
+          <Button variant="link" color="white" onClick={()=>navigate('/profile')} _hover={{ color: "teal.300" }}>
             User Profile
           </Button>
           <Button variant="link" color="white" _hover={{ color: "teal.300" }} onClick={()=>logout()}>

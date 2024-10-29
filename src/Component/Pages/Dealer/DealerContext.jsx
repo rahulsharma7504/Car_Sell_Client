@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import EndPoint from "../../Auth/Endpoint";
+import { useAuth } from "../../Context/AuthContext";
 
 // Create the context
 const DealerContext = createContext();

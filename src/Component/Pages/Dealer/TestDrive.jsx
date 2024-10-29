@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -20,57 +20,59 @@ import {
   useToast,
   Stack,
 } from '@chakra-ui/react';
+import { useAuth } from '../../Context/AuthContext';
+import EndPoint from '../../Auth/Endpoint';
+import axios from 'axios';
+import moment from 'moment';
 
-const initialRequests = [
-  {
-    id: 1,
-    customerName: 'John Doe',
-    carModel: 'Toyota Corolla',
-    preferredDateTime: '2024-09-20 14:00',
-    status: 'Pending',
-  },
-  {
-    id: 2,
-    customerName: 'Jane Smith',
-    carModel: 'Honda Civic',
-    preferredDateTime: '2024-09-22 10:00',
-    status: 'Approved',
-  },
-  // Add more test drive request objects as needed
-];
 
-function TestDriveRequests() {
-  const [requests, setRequests] = useState(initialRequests);
+function  TestDriveRequests() {
+  const {user}=useAuth()
+  const [requests, setRequests] = useState([  ]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const handleApprove = (id) => {
-    setRequests(
-      requests.map((request) =>
-        request.id === id ? { ...request, status: 'Approved' } : request
-      )
-    );
-    toast({
-      title: "Request approved.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
+  useEffect(()=>{
+    // Fetch test drive requests for the current dealer
+    fetchDrives()
+  },[])
+  async function fetchDrives (){
+    // Fetch test drive requests for the current dealer
+    const res=await axios.get(`${EndPoint.URL}/dealers/test-drive`);
+    if(res.status===200){
+      setRequests(res.data.allDrives);
+    };
+  }
+
+  const handleApprove = async(id) => {
+    const res=await axios.put(`${EndPoint.URL}/dealers/test-drive/${id}`);
+    if(res.status===200){
+      fetchDrives();
+      toast({
+        title: "Request approved.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+
+    
   };
 
-  const handleDecline = (id) => {
-    setRequests(
-      requests.map((request) =>
-        request.id === id ? { ...request, status: 'Declined' } : request
-      )
-    );
-    toast({
-      title: "Request declined.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
+  const handleDecline = async(id) => {
+    const res=await axios.put(`${EndPoint.URL}/dealers/decline/test-drive/${id}`);
+    if(res.status==200){
+      fetchDrives();
+      toast({
+        title: "Request declined.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+   
+   
   };
 
   const handleViewDetails = (request) => {
@@ -95,15 +97,15 @@ function TestDriveRequests() {
             <Tr key={request.id}>
               <Td>
                 <Button variant="link" onClick={() => handleViewDetails(request)}>
-                  {request.customerName}
+                  {request.customer_name}
                 </Button>
               </Td>
-              <Td>{request.carModel}</Td>
-              <Td>{request.preferredDateTime}</Td>
+              <Td>{request.car_name}</Td>
+              <Td>{moment(request.requested_date).format('DD-MM-YYYY')}</Td>
               <Td>{request.status}</Td>
               <Td>
                 <Stack direction="row" spacing={4}>
-                  {request.status === 'Pending' && (
+                  {request.status === 'pending' && (
                     <>
                       <Button colorScheme="green" onClick={() => handleApprove(request.id)}>
                         Approve
@@ -128,9 +130,9 @@ function TestDriveRequests() {
             <ModalHeader>Test Drive Request Details</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Box mb={3}><strong>Customer Name:</strong> {selectedRequest.customerName}</Box>
-              <Box mb={3}><strong>Car Model:</strong> {selectedRequest.carModel}</Box>
-              <Box mb={3}><strong>Preferred Date/Time:</strong> {selectedRequest.preferredDateTime}</Box>
+              <Box mb={3}><strong>Customer Name:</strong> {selectedRequest.customer_name}</Box>
+              <Box mb={3}><strong>Car Model:</strong> {selectedRequest.car_name}</Box>
+              <Box mb={3}><strong>Preferred Date/Time:</strong> {moment(selectedRequest.requested_date).format('DD-MM-YYYY')}</Box>
               <Box mb={3}><strong>Status:</strong> {selectedRequest.status}</Box>
             </ModalBody>
             <ModalFooter>

@@ -18,8 +18,12 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import EndPoint from '../../Auth/Endpoint';
+import { Link, useParams , useNavigate} from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 
 const CarListing = () => {
+  const {user}=useAuth()
+  const navigate=useNavigate();
   const [carListing, setCarListing] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredCars, setFilteredCars] = useState([]);
@@ -34,7 +38,7 @@ const CarListing = () => {
         setFilteredCars(data.cars); // Update filteredCars when data is fetched
       })
       .catch(error => console.error('Error:', error));
-  }, []); 
+  }, [user]); 
 
   // Search Function
   const handleSearch = (e) => {
@@ -63,7 +67,9 @@ const CarListing = () => {
     });
     setFilteredCars(sortedCars);
   };
-
+const CarDetailToRedirect=(carId)=>{
+  navigate(`/car-detail/${carId}`);
+}
   return (
     <Box>
       {/* Search Bar */}
@@ -110,7 +116,7 @@ const CarListing = () => {
                 <Text fontWeight="bold" color="gray.600">
                   ₹{car.price.toLocaleString()}
                 </Text>
-                <Button colorScheme="blue" mt={3}>
+                <Button onClick={()=>CarDetailToRedirect(car.id)} colorScheme="blue" mt={3}>
                   View Details
                 </Button>
               </VStack>

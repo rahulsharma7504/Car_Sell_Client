@@ -14,8 +14,10 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import EndPoint from '../../Auth/Endpoint';
 import axios from 'axios';
 import { useMatrix } from './MetrixContext';
+import { useAuth } from '../../Context/AuthContext';
 
 const CarListing = () => {
+  const {user}=useAuth()
   const { setTotelCar } = useMatrix();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const CarListing = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [user]);
 
   const fetchData = async () => {
     try {

@@ -22,8 +22,10 @@ import axios from 'axios';
 import moment from 'moment';
 import { useAuth } from '../../Context/AuthContext';
 import FeedBack from './FeedBack';
+import { useCart } from '../../Context/CartContext';
 
 const CarDetailPage = () => {
+  const {handleCart}=useCart()
   const toast = useToast()
   const { user } = useAuth()
   const [startDate, setStartDate] = useState(null); // State for selected date
@@ -179,6 +181,9 @@ const CarDetailPage = () => {
         )}
         <Button leftIcon={<FaPhone />} onClick={()=>handleClick(carDetails.contact_number)} colorScheme="blue">
           Contact Dealer
+        </Button>
+        <Button marginLeft={2} onClick={()=> handleCart(id,carDetails?.dealer_id,user.data.user.id)} colorScheme="green">
+          Save To cart
         </Button>
       </Flex>
     </Box>

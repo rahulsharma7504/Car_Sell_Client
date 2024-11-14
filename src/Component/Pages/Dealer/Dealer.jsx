@@ -17,7 +17,7 @@ const Dashboard = () => {
   const { totalCars } = useDealer();
   // Example data
   const [stats, setStats] = useState({
-    totalCarListings: totalCars.length,
+    totalCarListings: totalCars?.length,
     testDriveRequests: { pending: 5, completed: 25 },
     sales: 85,
     pendingApprovals: 10,
@@ -37,7 +37,7 @@ const Dashboard = () => {
         >
           <StatLabel>Total Car Listings</StatLabel>
           <StatNumber>{stats.totalCarListings}</StatNumber>
-        </Stat>
+        </Stat> 
         
         {/* Test Drive Requests Widget */}
         <Stat

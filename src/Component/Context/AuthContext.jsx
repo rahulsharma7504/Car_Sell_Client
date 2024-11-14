@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   // Initialize user state with default values
-  const [user, setUser] = useState({
+  const [ user, setUser] = useState({
     isAuthenticated: false,
     data: null,  // Store user data like roles, email, etc.
   });

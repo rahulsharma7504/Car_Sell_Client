@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import EndPoint from '../../Auth/Endpoint';
+
 import {
   Box,
   Button,
@@ -21,6 +24,7 @@ import EndPoint from '../../Auth/Endpoint';
 
 import { useNavigate } from 'react-router-dom';
 
+<<<<<<< Updated upstream
 
 function Profile() {
   const navigate=useNavigate()
@@ -31,6 +35,15 @@ function Profile() {
     currentPassword: '',
     newPassword: '',
   });
+=======
+
+
+var DealerData=JSON.parse(localStorage.getItem('userData'));
+
+function Profile() {
+  const [profile, setProfile] = useState(DealerData);
+  const [editProfile, setEditProfile] = useState(DealerData);
+>>>>>>> Stashed changes
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -39,6 +52,7 @@ function Profile() {
     const { name, value } = e.target;
     setEditProfile((prev) => ({ ...prev, [name]: value }));
   };
+<<<<<<< Updated upstream
 
   const handleUpdate = async() => {
     try {
@@ -64,6 +78,15 @@ function Profile() {
     }
     
    
+=======
+  const handleUpdate = async() => {
+    setProfile(editProfile);
+    const res=await axios.post(`${EndPoint.URL}/dealers/profile-update/${DealerData.id}`,profile);
+    if(res.status===200){
+      toast({ title: 'Profile updated successfully.', status:'success' });
+    }else{
+      toast({ title: 'OoPs Something  Went wronge.', status:'error' });
+>>>>>>> Stashed changes
   };
 
   const handlePasswordChange =async () => {
@@ -179,6 +202,7 @@ function Profile() {
       </Modal>
     </Box>
   );
+} 
 }
 
 export default Profile;

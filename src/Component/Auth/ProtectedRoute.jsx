@@ -15,6 +15,7 @@ import Profile from '../Pages/Dealer/Profile';
 import CarDetailPage from '../Pages/User/CarDetail';
 import Chatting from '../Pages/Dealer/Chatting';
 import UserProfilePage from '../Pages/User/UserProfilePage';
+import Cart from '../Pages/User/Cart';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -48,6 +49,8 @@ function ProtectedRoute({ children }) {
       return <CarDetailPage/>
     }else if(children === 'Profile'){
       return <UserProfilePage/>;
+    }else if(children === 'Cart'){
+      return <Cart/>
     }
   } 
   // Handle dealer routes

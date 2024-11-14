@@ -68,6 +68,7 @@ function App() {
               }
             />
             <Route path="/profle"element={<ProtectedRoute >{'Profile'}</ProtectedRoute>}/>
+            <Route path="/cart"element={<ProtectedRoute >{'Cart'}</ProtectedRoute>}/>
 
 
             {/* 404 Route - should be last */}

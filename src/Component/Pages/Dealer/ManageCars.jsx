@@ -136,7 +136,7 @@ function ManageListings() {
           </Tr>
         </Thead>
         <Tbody>
-          {filteredCars.map((car) => (
+          {filteredCars?.map((car) => (
             <Tr key={car.id}>
               <Td>
                 <Image src={JSON.parse(car.image_url)[1]} alt={car.name} boxSize="100px" />

@@ -13,6 +13,9 @@ const DealerProvider = ({ children }) => {
     const [totalSales, setTotalSales] = useState(10);     // Dummy initial value
 
     // Fetch data for total cars when the component mounts
+    useEffect(() => {
+        TotalCar();
+      },[]);
     const TotalCar =  async() => {
         try {
             const id = JSON.parse(localStorage.getItem('userData')).dealer.id;
@@ -25,9 +28,7 @@ const DealerProvider = ({ children }) => {
         }
     };
     
-    useEffect(() => {
-      TotalCar();
-    },[]);
+    
     
 
     // Return the context provider with values

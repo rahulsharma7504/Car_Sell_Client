@@ -28,7 +28,7 @@ const Navbar = () => {
   return (
     <Box style={{backgroundColor:'purple', lightingColor:'ActiveCaption'}} color="white" px={4}>
       <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-        <Text fontSize="xl" fontWeight="bold">
+        <Text fontSize="xl" fontWeight="bold" onClick={()=>navigate('/user-dashboard')}>
           Car Shop
         </Text>
         <IconButton
@@ -47,6 +47,9 @@ const Navbar = () => {
         >
           <Button variant="link" color="white" onClick={()=>navigate('/profile')} _hover={{ color: "teal.300" }}>
             User Profile
+          </Button>
+          <Button variant="link" color="white" onClick={()=>navigate('/cart')} _hover={{ color: "teal.300" }}>
+            Cart
           </Button>
           <Button variant="link" color="white" _hover={{ color: "teal.300" }} onClick={()=>logout()}>
             Log-Out

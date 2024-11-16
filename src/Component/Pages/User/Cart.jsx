@@ -11,32 +11,34 @@ import {
 } from '@chakra-ui/react';
 import { useCart } from '../../Context/CartContext';
 import axios from 'axios';
+import EndPoint from '../../Auth/Endpoint';
 
 const CartPage = () => {
   const { cartData } = useCart();
   const toast = useToast();
+  const User = JSON.parse(localStorage.getItem("userData"))?.user;
+
 
   // Request payment approval from the dealer
   const handleRequestApproval = async (item) => {
     try {
-      const res = await axios.post(`/api/payment/request-approval`, {
+      const res = await axios.post(`${EndPoint.URL}/users/payment-approve`, {
         carId: item.id,
         dealerId: item.dealer_id,
-        userId: item.user_id,
+        userId: User.id,
       });
 
-      if (res.status === 200) {
+      if (res.status === 201 || 200) {
         toast({
-          title: 'Approval Requested',
-          description: `Approval request sent for ${item.name}.`,
+          title: res.data.message ,
           status: 'info',
-          duration: 3000,
+          duration: 2000,
           isClosable: true,
         });
       }
     } catch (error) {
       toast({
-        title: 'Error',
+        title: error.res.data.message,
         description: 'Failed to request approval.',
         status: 'error',
         duration: 3000,

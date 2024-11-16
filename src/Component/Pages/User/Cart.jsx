@@ -1,23 +1,82 @@
-import React, { useState } from 'react';
-import { Box, Image, Text, Stack, Button, Heading, Divider, useStatStyles } from '@chakra-ui/react';
+import React from 'react';
+import { 
+  Box, 
+  Image, 
+  Text, 
+  Stack, 
+  Button, 
+  Heading, 
+  Divider, 
+  useToast 
+} from '@chakra-ui/react';
 import { useCart } from '../../Context/CartContext';
+import axios from 'axios';
 
 const CartPage = () => {
-    const {cartData,handleCartDetails}=useCart()
-  // Sample data for cart items; replace with actual state/props
-  
+  const { cartData } = useCart();
+  const toast = useToast();
 
-  const totalPrice = cartData.reduce((accumulator, item) => {
-    // Parse the price from string to float
-    const price = parseInt(item.price);
-    return accumulator + price;
-  }, 0);
-  
-  console.log(`Total Price: $${totalPrice.toFixed(2)}`);
+  // Request payment approval from the dealer
+  const handleRequestApproval = async (item) => {
+    try {
+      const res = await axios.post(`/api/payment/request-approval`, {
+        carId: item.id,
+        dealerId: item.dealer_id,
+        userId: item.user_id,
+      });
+
+      if (res.status === 200) {
+        toast({
+          title: 'Approval Requested',
+          description: `Approval request sent for ${item.name}.`,
+          status: 'info',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to request approval.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // Handle payment after approval
+  const handlePayment = async (item) => {
+    try {
+      const res = await axios.post(`/api/payment/make-payment`, {
+        carId: item.id,
+        dealerId: item.dealer_id,
+        userId: item.user_id,
+        amount: item.price,
+      });
+
+      if (res.status === 200) {
+        toast({
+          title: 'Payment Successful',
+          description: `Payment of $${item.price} for ${item.name} is complete.`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Payment failed.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box p={4} maxW="1200px" mx="auto">
-        <button onClick={handleCartDetails}>CLick</button>
       <Heading mb={4} textAlign="center">Your Cart</Heading>
 
       <Box display="flex" flexDirection={{ base: 'column', lg: 'row' }} gap={8}>
@@ -28,13 +87,35 @@ const CartPage = () => {
               key={item?.id}
               direction="row"
               spacing={4}
-              align="center" mb={4} border="1px" borderColor="gray.200" rounded="md" p={4}> 
-          
+              align="center"
+              mb={4}
+              border="1px"
+              borderColor="gray.200"
+              rounded="md"
+              p={4}
+            >
               <Image boxSize="100px" src={JSON.parse(item?.image_url)[0]} alt={item.name} />
               <Box>
                 <Text fontWeight="bold">{item?.name}</Text>
                 <Text color="gray.500">${item?.price}</Text>
+                <Text>Status: {item?.status || 'Pending Approval'}</Text>
               </Box>
+              <Button
+                colorScheme="blue"
+                size="sm"
+                onClick={() => handleRequestApproval(item)}
+                isDisabled={item.status == 'Completed'}
+              >
+                Request Approval
+              </Button>
+              <Button
+                colorScheme="teal"
+                size="sm"
+                onClick={() => handlePayment(item)}
+                isDisabled={item.status !== 'Approved'}
+              >
+                Make Payment
+              </Button>
             </Stack>
           ))}
         </Box>
@@ -44,17 +125,8 @@ const CartPage = () => {
           <Heading size="md" mb={4}>Order Summary</Heading>
           <Divider mb={4} />
           <Text fontWeight="bold" fontSize="lg" mb={2}>
-            Total: ${totalPrice}
+            Total: ${cartData.reduce((acc, item) => acc + parseFloat(item.price), 0)}
           </Text>
-          <Button
-            colorScheme="teal"
-            size="lg"
-            width="100%"
-            mt={4}
-            onClick={() => alert('Proceed to Payment')}
-          >
-            Make Payment
-          </Button>
         </Box>
       </Box>
     </Box>

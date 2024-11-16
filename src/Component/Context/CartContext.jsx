@@ -1,71 +1,80 @@
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import EndPoint from "../Auth/Endpoint";
 import { useToast } from "@chakra-ui/react";
-import { useAuth } from "./AuthContext";
 
+const CartContext = createContext();
 
-const CartContext = createContext()
 export const CartProvider = ({ children }) => {
-    const User = JSON.parse(localStorage.getItem('userData'))?.user
+    const User = JSON.parse(localStorage.getItem("userData"))?.user;
 
-    const [cartData,setCartData]=useState([]);
-    const toast=useToast()  
+    const [cartData, setCartData] = useState([]);
+    const toast = useToast();
 
-    async function handleCart(carId, dealerId, userId) {
-        const data={
-            carId: carId,
-            dealerId: dealerId,
-            userId: userId
-        }
-        console.log(data)
-        const res = await axios.post(`${EndPoint.URL}/users/cart`, data);
-        if(res.status==200){
+    // Fetch cart details with useCallback to memoize the function
+    const handleCartDetails = useCallback(async () => {
+        try {
+            const res = await axios.get(`${EndPoint.URL}/users/cart-details/${User?.id}`);
+            setCartData(res?.data || []);
+            console.log("Cart data loaded:", res.data);
+        } catch (error) {
             toast({
-                title: res.data.message,
-                status: "success",
-                duration: 2000,
+                title: "Failed to load cart details",
+                status: "error",
+                duration: 1000,
                 isClosable: true,
-            })  
-            handleCartDetails()          
-        }else{
+            });
+        }
+    }, []);
+
+    // Add item to cart and refresh cart details
+    const handleCart = async (carId, dealerId, userId) => {
+        const data = {
+            carId,
+            dealerId,
+            userId,
+        };
+        try {
+            const res = await axios.post(`${EndPoint.URL}/users/cart`, data);
+            if (res.status === 200) {
+                toast({
+                    title: res.data.message,
+                    status: "success",
+                    duration: 2000,
+                    isClosable: true,
+                });
+                // Refresh cart data after adding an item
+                handleCartDetails();
+            } else {
+                toast({
+                    title: res.data.message,
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true,
+                });
+            }
+        } catch (error) {
             toast({
-                title: res.data.message,
+                title: "Failed to add item to cart",
                 status: "error",
                 duration: 2000,
                 isClosable: true,
-            })
+            });
         }
-    }
+    };
 
-    useEffect(()=>{
-        handleCartDetails();
-    },[]) 
-    const handleCartDetails=async()=>{
-        try {
-
-        const res=await axios.get(`${EndPoint.URL}/users/cart-details/${User.id}`);
-                setCartData(res?.data);
-            
-        } catch (error) {
-            toast({
-                title:'!! Faild to load',
-                isClosable:true,
-                duration:1000,
-                status:'error'
-            })
-            
+    // Load cart details when the component mounts
+    useEffect(() => {
+        if (User) {
+            handleCartDetails();
         }
+    }, []);
 
-
-    }
     return (
-        <>
-            <CartContext.Provider value={{ handleCart,handleCartDetails, cartData }}>
-                {children}
-            </CartContext.Provider>
-        </>
-    )
-}
+        <CartContext.Provider value={{ handleCart, handleCartDetails, cartData }}>
+            {children}
+        </CartContext.Provider>
+    );
+};
 
-export const useCart = () => useContext(CartContext)
+export const useCart = () => useContext(CartContext);

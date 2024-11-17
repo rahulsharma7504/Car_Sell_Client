@@ -20,83 +20,70 @@ import {
   useToast,
   Stack,
 } from '@chakra-ui/react';
+import { useOrder } from '../../Context/OrderContext';
+import moment from 'moment';
 
-const initialOrders = [
-  {
-    id: 1,
-    carModel: 'Toyota Corolla',
-    customerName: 'John Doe',
-    saleDate: '2024-09-10',
-    status: 'Completed',
-  },
-  {
-    id: 2,
-    carModel: 'Honda Civic',
-    customerName: 'Jane Smith',
-    saleDate: '2024-09-12',
-    status: 'Pending',
-  },
-  // Add more sales order objects as needed
-];
+
 
 function SalesOrders() {
-  const [orders, setOrders] = useState(initialOrders);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { ApprovalRequestData,updateStatus, orderData } = useOrder()
+  const [orders, setOrders] = useState(orderData);
   const toast = useToast();
 
-  const handleStatusUpdate = (id, newStatus) => {
-    setOrders(
-      orders.map((order) =>
-        order.id === id ? { ...order, status: newStatus } : order
-      )
-    );
-    toast({
-      title: "Order status updated.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-  };
 
-  const handleViewDetails = (order) => {
-    setSelectedOrder(order);
-    onOpen();
-  };
+  if (orderData === null) {
+    return <div>Loading...</div>;
+  }
+
+  const handleApprove=async(orderId,userId,carId)=>{
+      updateStatus(orderId, 'Approve',userId,carId);
+  }
+  const handleReject=async(orderId,userId,carId)=>{
+      updateStatus(orderId, 'Reject',userId,carId);
+  }
+
 
   return (
     <Box p={5}>
+      <h3><b>User Payment Requests</b></h3><hr height={'22px'} />
       <Table variant="simple">
         <Thead>
           <Tr>
             <Th>Order ID</Th>
             <Th>Car Model</Th>
             <Th>Customer Name</Th>
-            <Th>Sale Date</Th>
+            <Th>Request Date</Th>
             <Th>Status</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {orders.map((order) => (
+          {orders?.map((order) => (
             <Tr key={order.id}>
-              <Td>{order.id}</Td>
-              <Td>{order.carModel}</Td>
-              <Td>{order.customerName}</Td>
-              <Td>{order.saleDate}</Td>
+              <Td>{order.order_id}</Td>
+              <Td>{order.carName}</Td>
+              <Td>{order.username}</Td>
+              <Td>{moment(order.created_at).format('DD-MM-YYYY')}</Td>
+
               <Td>{order.status}</Td>
               <Td>
                 <Stack direction="row" spacing={4}>
-                  <Button colorScheme="blue" onClick={() => handleViewDetails(order)}>
-                    View Details
-                  </Button>
-                  {order.status === 'Pending' && (
-                    <Button
-                      colorScheme="green"
-                      onClick={() => handleStatusUpdate(order.id, 'Completed')}
-                    >
-                      Mark as Completed
-                    </Button>
+                  {order.status === 'Pending' ? (
+                    <>
+                      <Button
+                        colorScheme="red"
+                        onClick={() => handleReject(order.order_id,order.user_id,order.car_id)}>
+                        Reject 
+                      </Button>
+                      <Button
+                        colorScheme="green"
+                        onClick={() => handleApprove(order.order_id,order.user_id,order.car_id)}>
+                        Approve
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                    </>
                   )}
                 </Stack>
               </Td>
@@ -105,28 +92,6 @@ function SalesOrders() {
         </Tbody>
       </Table>
 
-      {/* Order Details Modal */}
-      {selectedOrder && (
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Order Details</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Box mb={3}><strong>Order ID:</strong> {selectedOrder.id}</Box>
-              <Box mb={3}><strong>Car Model:</strong> {selectedOrder.carModel}</Box>
-              <Box mb={3}><strong>Customer Name:</strong> {selectedOrder.customerName}</Box>
-              <Box mb={3}><strong>Sale Date:</strong> {selectedOrder.saleDate}</Box>
-              <Box mb={3}><strong>Status:</strong> {selectedOrder.status}</Box>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      )}
     </Box>
   );
 }

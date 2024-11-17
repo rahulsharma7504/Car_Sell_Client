@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Box, 
   Tabs, 
@@ -13,7 +13,8 @@ import {
   Input, 
   Button, 
   Table, 
-  Thead, 
+  Thead,
+  useToast, 
   Tbody, 
   Tr, 
   Th, 
@@ -22,11 +23,34 @@ import {
 import { motion } from 'framer-motion';
 import {useAuth} from '../../Context/AuthContext'
 import axios from 'axios';
+import moment from 'moment';
 import Endpoint from '../../Auth/Endpoint';
 const MotionTr = motion(Tr); // Animate each row
 
 function UserProfilePage() {
+  const toast=useToast()
+  const User = JSON.parse(localStorage.getItem("userData"))?.user;
+
   const { user } = useAuth(); // Use AuthContext hook to access user information
+  const [purchaseData,setPurchaseData]=useState([])
+
+  // Fetch Purchase History
+  useEffect(()=>{
+    async function fetchHistory(){
+      try{
+        const res=await axios.get(`${Endpoint.URL}/users/purchase-history/${User.id}`);
+        setPurchaseData(res.data)
+
+      }catch(error){
+        toast({
+
+        })
+      }
+      
+    }
+    fetchHistory()
+  },[])
+
 
   const [userDetails,setUserDetails]=useState({
       name:user.data.user.username,
@@ -34,11 +58,6 @@ function UserProfilePage() {
       password:user.data.user.password,
       userId:user.data.user.id
   })
-  // Sample data
-  const purchaseData = [
-    { id: '#1234', date: '2024-09-12', amount: '$500', status: 'Completed' },
-    { id: '#5678', date: '2024-10-01', amount: '$700', status: 'Pending' }
-  ];
 
   function handleChange(event){
     setUserDetails({...userDetails,[event.target.name]: event.target.value})
@@ -101,17 +120,17 @@ function UserProfilePage() {
               <Tbody>
                 {purchaseData.map((item, index) => (
                   <MotionTr
-                    key={item.id}
+                    key={item.payment_id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1, duration: 0.5 }}
                     _hover={{ bg: 'teal.100', shadow: 'md' }}
                   >
-                    <Td textAlign="center" fontWeight="bold">{item.id}</Td>
-                    <Td textAlign="center">{item.date}</Td>
+                    <Td textAlign="center" fontWeight="bold">{item.transaction_id}</Td>
+                    <Td textAlign="center">{moment(item.payment_date).format('DD-MM-YYYY')}</Td>
                     <Td textAlign="center" color="green.600">{item.amount}</Td>
                     <Td textAlign="center" color={item.status === 'Completed' ? 'green.500' : 'orange.500'}>
-                      {item.status}
+                      {item.payment_status}
                     </Td>
                   </MotionTr>
                 ))}

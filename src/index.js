@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import MatrixProvider from './Component/Pages/Admin/MetrixContext'
 import DealerProvider from './Component/Pages/Dealer/DealerContext';
 import { CartProvider } from './Component/Context/CartContext';
+import { OrderProvider } from './Component/Context/OrderContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -14,9 +15,11 @@ root.render(
     <ChakraProvider>
         <MatrixProvider>
             <CartProvider>
+                <OrderProvider>
             <DealerProvider>
                 <App />
             </DealerProvider>
+            </OrderProvider>
             </CartProvider>
         </MatrixProvider>
 

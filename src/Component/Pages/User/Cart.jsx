@@ -1,20 +1,22 @@
 import React from 'react';
-import { 
-  Box, 
-  Image, 
-  Text, 
-  Stack, 
-  Button, 
-  Heading, 
-  Divider, 
-  useToast 
+import {
+  Box,
+  Image,
+  Text,
+  Stack,
+  Button,
+  Heading,
+  Divider,
+  useToast
 } from '@chakra-ui/react';
 import { useCart } from '../../Context/CartContext';
 import axios from 'axios';
 import EndPoint from '../../Auth/Endpoint';
+import { useOrder } from '../../Context/OrderContext';
 
 const CartPage = () => {
   const { cartData } = useCart();
+  const {handlePayment}= useOrder()
   const toast = useToast();
   const User = JSON.parse(localStorage.getItem("userData"))?.user;
 
@@ -30,7 +32,7 @@ const CartPage = () => {
 
       if (res.status === 201 || 200) {
         toast({
-          title: res.data.message ,
+          title: res.data.message,
           status: 'info',
           duration: 2000,
           isClosable: true,
@@ -48,34 +50,34 @@ const CartPage = () => {
   };
 
   // Handle payment after approval
-  const handlePayment = async (item) => {
-    try {
-      const res = await axios.post(`/api/payment/make-payment`, {
-        carId: item.id,
-        dealerId: item.dealer_id,
-        userId: item.user_id,
-        amount: item.price,
-      });
+  // const handlePayment = async (item) => {
+  //   try {
+  //     const res = await axios.post(`/api/payment/make-payment`, {
+  //       carId: item.id,
+  //       dealerId: item.dealer_id,
+  //       userId: item.user_id,
+  //       amount: item.price,
+  //     });
 
-      if (res.status === 200) {
-        toast({
-          title: 'Payment Successful',
-          description: `Payment of $${item.price} for ${item.name} is complete.`,
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Payment failed.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+  //     if (res.status === 200) {
+  //       toast({
+  //         title: 'Payment Successful',
+  //         description: `Payment of $${item.price} for ${item.name} is complete.`,
+  //         status: 'success',
+  //         duration: 3000,
+  //         isClosable: true,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     toast({
+  //       title: 'Error',
+  //       description: 'Payment failed.',
+  //       status: 'error',
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   }
+  // };
 
   return (
     <Box p={4} maxW="1200px" mx="auto">
@@ -106,18 +108,22 @@ const CartPage = () => {
                 colorScheme="blue"
                 size="sm"
                 onClick={() => handleRequestApproval(item)}
-                isDisabled={item.status == 'Completed'}
+                isDisabled={item.status === 'Approve' || item.status === 'approve'}
               >
                 Request Approval
               </Button>
+
               <Button
                 colorScheme="teal"
                 size="sm"
                 onClick={() => handlePayment(item)}
-                isDisabled={item.status !== 'Approved'}
+                isDisabled={item.status.toLowerCase() !== 'approve'}
               >
                 Make Payment
               </Button>
+
+
+
             </Stack>
           ))}
         </Box>

@@ -16,7 +16,6 @@ export const CartProvider = ({ children }) => {
         try {
             const res = await axios.get(`${EndPoint.URL}/users/cart-details/${User?.id}`);
             setCartData(res?.data || []);
-            console.log("Cart data loaded:", res.data);
         } catch (error) {
             toast({
                 title: "Failed to load cart details",
@@ -63,15 +62,35 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    // Load cart details when the component mounts
+    // Load cart details when the the requst is made
+    const cartPendingRequest = async () => {
+        try {
+            const res = await axios.get(`${EndPoint.URL}/dealers/cart-pending-request`);
+        } catch (error) {
+            toast({
+                title: "Failed to load cart details",
+                status: "error",
+                duration: 1000,
+                isClosable: true,
+            });
+        }
+    }
+
+
+
+
     useEffect(() => {
         if (User) {
+            cartPendingRequest();
+
             handleCartDetails();
         }
     }, []);
 
+    // For Approva; cart details by Car-Dealer
+
     return (
-        <CartContext.Provider value={{ handleCart, handleCartDetails, cartData }}>
+        <CartContext.Provider value={{ handleCart, cartPendingRequest, handleCartDetails, cartData }}>
             {children}
         </CartContext.Provider>
     );

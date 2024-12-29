@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
         {children}
       </Container>
 
-      <Flex as="footer" bg="purple.500" p={4} color="white" justify="center">
+      <Flex as="footer"  p={4} style={{backgroundColor:'black'}} color="white" justify="center">
         <Text>© 2024 Car Selling App. All rights reserved.</Text>
       </Flex>
     </Box>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 // Import components
@@ -7,71 +7,59 @@ import NotFound from './Component/Pages/NotFound';
 import Login from './Component/Auth/Login';
 import Register from './Component/Auth/Register';
 import Layout from './Component/Pages/Layout';
-import { AuthProvider, useAuth } from './Component/Context/AuthContext';
+import { AuthProvider } from './Component/Context/AuthContext';
 import Admin from './Component/Pages/Admin/Admin';
-import Dealer from './Component/Pages/Dealer/Dealer';
-import User from './Component/Pages/User/User';
-import ProtectedRoute from './Component/Auth/ProtectedRoute';
 import ManageUser from './Component/Pages/Admin/ManageUsers';
-import MatrixProvider from './Component/Pages/Admin/MetrixContext'
-import DealerProvider from './Component/Pages/Dealer/DealerContext';
-function App() {
-  const { user } = useAuth;
+import CarListings from './Component/Pages/Admin/CarListings';
+import ManageDealers from './Component/Pages/Admin/ManageDealers';
+import AddCar from './Component/Pages/Dealer/AddCar';
+import ManageCars from './Component/Pages/Dealer/ManageCars';
+import Profile from './Component/Pages/Dealer/Profile';
+import Dealer from './Component/Pages/Dealer/Dealer';
+import SaleOrder from './Component/Pages/Dealer/SalesOrder';
+import TestDrive from './Component/Pages/Dealer/TestDrive';
+import Chatting from './Component/Pages/Dealer/Chatting';
 
+// Import Dealer and User components
+
+import CarListing from './Component/Pages/User/User';
+import CarDetail from './Component/Pages/User/CarDetail';
+import UserProfilePage from './Component/Pages/User/UserProfilePage';
+import Cart from './Component/Pages/User/Cart';
+import ProtectedRoute from './Component/Auth/ProtectedRoute';
+
+function App() {
   return (
     <Router>
       <AuthProvider>
         <Layout>
           <Routes>
-
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
+            {/* Admin Routes */}
+            <Route path="/admin-dashboard" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />
+            <Route path="/manage-users" element={<ProtectedRoute role="admin"><ManageUser /></ProtectedRoute>} />
+            <Route path="/manage-dealers" element={<ProtectedRoute role="admin"><ManageDealers /></ProtectedRoute>} />
+            <Route path="/car-listings" element={<ProtectedRoute role="admin"><CarListings /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute role="admin"><Chatting /></ProtectedRoute>} />
 
-            {/* Protected Routes */}
-            <Route
-              path="/admin-dashboard"
-              element={
+            {/* Dealer Routes */}
+            <Route path="/test-drive-requests" element={<ProtectedRoute role="dealer"><TestDrive /></ProtectedRoute>} />
 
-                <ProtectedRoute >
+            <Route path="/dealer-dashboard" element={<ProtectedRoute role="dealer"><Dealer /> </ProtectedRoute>} />
+            <Route path="/manage-listings" element={<ProtectedRoute role="dealer"><ManageCars /> </ProtectedRoute>} />
+            <Route path="/add-new-car" element={<ProtectedRoute role="dealer"><AddCar /> </ProtectedRoute>} />
+            <Route path="/sales-orders" element={<ProtectedRoute role="dealer"><SaleOrder /> </ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute role="dealer"><Profile /> </ProtectedRoute>} />
 
-                  {'Admin'}
-                  {/* Admin specific routes */}
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/manage-users" element={  <ProtectedRoute >{'ManageUsers'}</ProtectedRoute>}/>
-            <Route path="/manage-dealers" element={  <ProtectedRoute >{'ManageDealers'}</ProtectedRoute>}/>
-            <Route path="/car-listings" element={  <ProtectedRoute >{'CarListings'}</ProtectedRoute>}/>
-            
-            {/* Dealers Route */}
-            <Route path="/dealer-dashboard"element={<ProtectedRoute >{'Dealer'}</ProtectedRoute>}/>
-            <Route path="/manage-listings"element={<ProtectedRoute >{'ManageCars'}</ProtectedRoute>}/>
-            <Route path="/add-new-car"element={<ProtectedRoute >{'AddCar'}</ProtectedRoute>}/>
-            <Route path="/test-drive-requests"element={<ProtectedRoute >{'TestDrive'}</ProtectedRoute>}/>
-            <Route path="/sales-orders"element={<ProtectedRoute >{'SalesOrder'}</ProtectedRoute>}/>
-            <Route path="/Profile"element={<ProtectedRoute >{'Profile'}</ProtectedRoute>}/>
-            <Route path="/chat"element={<ProtectedRoute >{'Chatting'}</ProtectedRoute>}/>
+            {/* User Routes */}
+            <Route path="/" element={<ProtectedRoute role="user"> <CarListing /> </ProtectedRoute>} />
+            <Route path="/car-detail/:id" element={<ProtectedRoute role="user"> <CarDetail /> </ProtectedRoute>} />
+            <Route path="/user-profile" element={<ProtectedRoute role="user"> <UserProfilePage /> </ProtectedRoute>} />
+            <Route path="/cart" element={<ProtectedRoute role="user"> <Cart /> </ProtectedRoute>} />
 
-            <Route path="/user-dashboard"
-              element={
-                <ProtectedRoute>
-                  {'User'}
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/car-detail/:id"
-              element={
-                <ProtectedRoute>
-                  {'car-detail'}
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/profle"element={<ProtectedRoute >{'Profile'}</ProtectedRoute>}/>
-            <Route path="/cart"element={<ProtectedRoute >{'Cart'}</ProtectedRoute>}/>
-
-
-            {/* 404 Route - should be last */}
+            {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

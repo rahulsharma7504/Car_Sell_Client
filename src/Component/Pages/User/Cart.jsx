@@ -15,16 +15,16 @@ import EndPoint from '../../Auth/Endpoint';
 import { useOrder } from '../../Context/OrderContext';
 
 const CartPage = () => {
-  const { cartData } = useCart();
+  const { cartData ,fetchCartRequestMade} = useCart();
   const {handlePayment}= useOrder()
   const toast = useToast();
   const User = JSON.parse(localStorage.getItem("userData"))?.user;
 
 
   // Request payment approval from the dealer
-  const handleRequestApproval = async (item) => {
+  const handlerCartRequestApproval = async (item) => {
     try {
-      const res = await axios.post(`${EndPoint.URL}/users/payment-approve`, {
+      const res = await axios.post(`${EndPoint.URL}/users/cart-payment-approve-request`, {
         carId: item.id,
         dealerId: item.dealer_id,
         userId: User.id,
@@ -32,7 +32,7 @@ const CartPage = () => {
 
       if (res.status === 201 || 200) {
         toast({
-          title: res.data.message,
+          title: res.data?.message,
           status: 'info',
           duration: 2000,
           isClosable: true,
@@ -40,7 +40,7 @@ const CartPage = () => {
       }
     } catch (error) {
       toast({
-        title: error.res.data.message,
+        title: error.response.data?.message,
         description: 'Failed to request approval.',
         status: 'error',
         duration: 3000,
@@ -48,37 +48,8 @@ const CartPage = () => {
       });
     }
   };
-
-  // Handle payment after approval
-  // const handlePayment = async (item) => {
-  //   try {
-  //     const res = await axios.post(`/api/payment/make-payment`, {
-  //       carId: item.id,
-  //       dealerId: item.dealer_id,
-  //       userId: item.user_id,
-  //       amount: item.price,
-  //     });
-
-  //     if (res.status === 200) {
-  //       toast({
-  //         title: 'Payment Successful',
-  //         description: `Payment of $${item.price} for ${item.name} is complete.`,
-  //         status: 'success',
-  //         duration: 3000,
-  //         isClosable: true,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     toast({
-  //       title: 'Error',
-  //       description: 'Payment failed.',
-  //       status: 'error',
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //   }
-  // };
-
+ 
+ 
   return (
     <Box p={4} maxW="1200px" mx="auto">
       <Heading mb={4} textAlign="center">Your Cart</Heading>
@@ -86,7 +57,7 @@ const CartPage = () => {
       <Box display="flex" flexDirection={{ base: 'column', lg: 'row' }} gap={8}>
         {/* Cart Items Section */}
         <Box flex="2" p={4} boxShadow="lg" rounded="md" bg="white">
-          {cartData.map((item) => (
+          {cartData?.map((item) => (
             <Stack
               key={item?.id}
               direction="row"
@@ -107,8 +78,8 @@ const CartPage = () => {
               <Button
                 colorScheme="blue"
                 size="sm"
-                onClick={() => handleRequestApproval(item)}
-                isDisabled={item.status === 'Approve' || item.status === 'approve'}
+                onClick={() => handlerCartRequestApproval(item)}
+                isDisabled={item?.status === 'Approve' || item?.status === 'approve'}
               >
                 Request Approval
               </Button>
@@ -117,7 +88,7 @@ const CartPage = () => {
                 colorScheme="teal"
                 size="sm"
                 onClick={() => handlePayment(item)}
-                isDisabled={item.status.toLowerCase() !== 'approve'}
+                isDisabled={item.status !== 'approve'}
               >
                 Make Payment
               </Button>

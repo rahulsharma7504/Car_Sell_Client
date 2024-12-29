@@ -3,27 +3,35 @@ import axios from "axios";
 import EndPoint from "../Auth/Endpoint";
 import { Toast } from "bootstrap";
 import { useToast } from "@chakra-ui/react";
+import { useAuth } from '../Context/AuthContext';
+
+
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
+
   const toast = useToast();
   const [orderData, setOrderData] = useState(null); // Initially null
   const [loading, setLoading] = useState(true); // Track loading state
+  const [cartPending, setCartPending] = useState([]); // Track cart pending status
 
-  const ApprovalRequestData = async () => {
+  const cartPendingRequests = async () => {
     try {
-      const res = await axios.get(`${EndPoint.URL}/users/payment-approval-request`);
-      setOrderData(res.data);
+      const dealerId = JSON.parse(localStorage.getItem("userData"))?.dealer?.id
+      const res = await axios.get(`${EndPoint.URL}/dealers/cart-request/${dealerId}`);
+      setCartPending(res.data);
+      console.log(res.data);
     } catch (error) {
-      console.error("Error fetching payment approval requests:", error);
-      setOrderData(null);
+      console.error("Error fetching cart pending requests:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  
 
   useEffect(() => {
-    ApprovalRequestData();
+    cartPendingRequests();
   }, []);
 
   const updateStatus = async (order_id, status, userId, carId) => {
@@ -36,7 +44,6 @@ export const OrderProvider = ({ children }) => {
         car_id: carId,
       };
       const res = await axios.post(`${EndPoint.URL}/users/payment-status`, data);
-      ApprovalRequestData()
       toast({
         title: res.data.message,
         status: 'success',
@@ -65,7 +72,7 @@ export const OrderProvider = ({ children }) => {
       const response = await axios.post(`${EndPoint.URL}/users/create-order`, {
         amount: item.price, // Pass amount here
         currency: 'INR',
-        userId:item.user_id,
+        userId: item.user_id,
         carId: item.id,
       });
 
@@ -85,7 +92,7 @@ export const OrderProvider = ({ children }) => {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
-            userId:item.user_id,
+            userId: item.user_id,
             carId: item.id,
             amount: item.price,
           };
@@ -112,7 +119,7 @@ export const OrderProvider = ({ children }) => {
 
 
   return (
-    <OrderContext.Provider value={{ ApprovalRequestData, updateStatus, handlePayment, orderData, loading }}>
+    <OrderContext.Provider value={{ cartPending, updateStatus, handlePayment, orderData, loading }}>
       {children}
     </OrderContext.Provider>
   );

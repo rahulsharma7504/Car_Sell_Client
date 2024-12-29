@@ -1,97 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Flex,
-  HStack,
-  IconButton,
-  Button,
-  useDisclosure,
-  Stack,
-  Collapse,
-  Text,
-  Avatar,
-} from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import {useAuth} from '../../Context/AuthContext'
-import { Navigate, useNavigate } from 'react-router-dom';
-const Navbar = () => {
+import { Link, useNavigate } from 'react-router-dom';
+import { Navbar, Nav, Button, Collapse } from 'react-bootstrap';
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'; // You can also replace this with React-Bootstrap's Navbar.Toggle
+import { useAuth } from '../../Context/AuthContext';
+import styles from '../Styles/UserNavbar.module.css';
+import { Avatar } from '@chakra-ui/react';
+
+const UserNavbar = () => {
   const navigate = useNavigate();
-  
-  const {user,logout} =useAuth()
-  const [userData,setUserData]=useState(null);
-  const { isOpen, onToggle } = useDisclosure();
-  useEffect(()=>{
-    const User=JSON.parse(localStorage.getItem('userData')).user;
+  const { user, logout } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const User = JSON.parse(localStorage.getItem('userData'))?.user;
     setUserData(User);
-  },[])
+  }, []);
+
+  // Toggle the mobile menu
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <Box style={{backgroundColor:'purple', lightingColor:'ActiveCaption'}} color="white" px={4}>
-      <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-        <Text fontSize="xl" fontWeight="bold" onClick={()=>navigate('/user-dashboard')}>
-          Car Shop
-        </Text>
-        <IconButton
-          size={'md'}
-          icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-          aria-label={'Toggle Navigation'}
-          display={{ md: 'none' }}
-          onClick={onToggle}
-          color="white"
-        />
-        <HStack
-          as={'nav'}
-          spacing={4}
-          display={{ base: 'none', md: 'flex' }}
-          ml="auto" // Align links to the right
-        >
-          <Button variant="link" color="white" onClick={()=>navigate('/profile')} _hover={{ color: "teal.300" }}>
+    <Navbar expand="md" className={styles.navbar}>
+      {/* Navbar Title */}
+      <Navbar.Brand as={Link} to="/" className={styles.navbarTitle}>
+        Car Shop
+      </Navbar.Brand>
+
+      {/* Hamburger Menu Button for mobile */}
+      <Navbar.Toggle aria-controls="navbar-nav" onClick={toggleMenu} className={styles.hamburgerButton}>
+        {isOpen ? <CloseIcon /> : <HamburgerIcon />}
+      </Navbar.Toggle>
+
+      {/* Desktop Navigation Links */}
+      <Navbar.Collapse id="navbar-nav" className={isOpen ? styles.show : ''}>
+        <Nav className="ml-auto">
+          <Nav.Link as={Button} variant="link" onClick={() => navigate('/user-profile')} className={styles.navLink}>
             User Profile
-          </Button>
-          <Button variant="link" color="white" onClick={()=>navigate('/cart')} _hover={{ color: "teal.300" }}>
+          </Nav.Link>
+          <Nav.Link as={Button} variant="link" onClick={() => navigate('/cart')} className={styles.navLink}>
             Cart
-          </Button>
-          <Button variant="link" color="white" _hover={{ color: "teal.300" }} onClick={()=>logout()}>
+          </Nav.Link>
+          <Nav.Link as={Button} variant="link" onClick={() => logout()} className={styles.navLink}>
             Log-Out
-          </Button>
+          </Nav.Link>
           <Avatar
             size="md"
-            name="User Name" // Change this to the user's name dynamically if needed
-            src={userData?.image} // Replace with a dynamic image source
-            cursor="pointer"
-            _hover={{ border: '2px solid teal.300' }}
+            name={userData?.name || 'User Name'}
+            src={userData?.image || 'https://bit.ly/broken-link'}
+            className={styles.avatar}
+            style={{ border: '2px solid transparent' }}
+            onMouseEnter={(e) => e.target.style.border = '2px solid teal'}
+            onMouseLeave={(e) => e.target.style.border = '2px solid transparent'}
           />
-        </HStack>
-      </Flex>
+        </Nav>
+      </Navbar.Collapse>
 
-      <Collapse in={isOpen} animateOpacity>
-        <Stack
-          bg="teal.500"
-          p={4}
-          display={{ md: 'none' }}
-          borderRadius="md"
-          spacing={2}
-        >
-          <Button variant="link" color="white" _hover={{ color: "teal.300" }}>
-            Test Drives
-          </Button>
-          <Button variant="link" color="white" _hover={{ color: "teal.300" }}>
-            User Profile
-          </Button>
-          <Button variant="link" color="white" _hover={{ color: "teal.300" }}>
-            Logout
-          </Button>
-          <Avatar
-            size="sm"
-            name="User Name" // Change this to the user's name dynamically if needed
-            src="https://bit.ly/broken-link" // Replace with a dynamic image source
-            cursor="pointer"
-            _hover={{ border: '2px solid teal.300' }}
-          />
-        </Stack>
-      </Collapse>
-    </Box>
+    </Navbar>
   );
 };
 
-export default Navbar;
+export default UserNavbar;

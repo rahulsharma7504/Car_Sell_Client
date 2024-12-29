@@ -43,7 +43,8 @@ function UserProfilePage() {
 
       }catch(error){
         toast({
-
+          title: 'Error fetching purchase history.',
+          status: 'error'
         })
       }
       

@@ -1,0 +1,32 @@
+.navbar {
+  background-color: #333;
+  padding: 10px;
+}
+
+.navbarTitle {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.navLink {
+  color: white;
+  margin: 0 10px;
+  &:hover {
+    color: teal;
+  }
+}
+
+
+.collapseMenu {
+  background-color: #333;
+  padding: 20px;
+}
+
+.hamburgerButton {
+  color: white;
+}
+
+.show {
+  display: block;
+}

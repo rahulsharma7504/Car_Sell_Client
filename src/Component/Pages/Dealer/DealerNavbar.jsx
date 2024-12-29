@@ -23,7 +23,6 @@ const Links = [
   { name: 'Test Drive Requests', icon: FaCalendarAlt, href: '/test-drive-requests' },
   { name: 'Sales & Orders', icon: FaShoppingCart, href: '/sales-orders' },
   { name: 'Profile', icon: FaUser, href: '/profile' },
-  { name: 'Notification', icon: ChatIcon, href: '/chat' }
 ];
 
 const NavLink = ({ link }) => (

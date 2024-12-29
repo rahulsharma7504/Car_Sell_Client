@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       if (user.role === 'admin') {
         navigate('/admin-dashboard');
       } else {
-        navigate('/user-dashboard');
+        navigate('/');
       }
     }else if(dealer){
       navigate('/dealer-dashboard');

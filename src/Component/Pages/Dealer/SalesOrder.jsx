@@ -17,19 +17,13 @@ import {
   Tabs,
   useToast,
 } from '@chakra-ui/react';
-import { useOrder } from '../../Context/OrderContext';
 import moment from 'moment';
+import { useOrder } from '../../Context/OrderContext';
+import { useCart } from '../../Context/CartContext';
 
 function SalesOrders() {
   const toast = useToast();
-
-  // const handleApprove = async (orderId, userId, carId) => {
-  //   updateStatus(orderId, 'Approve', userId, carId);
-  // };
-
-  // const handleReject = async (orderId, userId, carId) => {
-  //   updateStatus(orderId, 'Reject', userId, carId);
-  // };
+   const {cartPending,updateCartRequest}=useCart()
 
   return (
     <Box p={5}>
@@ -56,6 +50,33 @@ function SalesOrders() {
                 </Tr>
               </Thead>
               <Tbody>
+              {cartPending ?( 
+              cartPending.map((request) => (
+                  <Tr key={request.id}>
+                    <Td><img src={JSON.parse(request.carImage)[1]} alt="C-image" width={62} /></Td>
+                    <Td>{request.carName}</Td>
+                    <Td>{request.username}</Td>
+                    <Td>{moment(request.requested_date).format('DD-MM-YYYY')}</Td>
+                    <Td>{request.status}</Td>
+                    {
+                      request.status === 'pending' ? (
+                        <Td>
+                          <Stack direction="row" spacing={4}>
+                            <Button colorScheme="green" onClick={()=>updateCartRequest(request,'approve')}>Approve</Button>
+                            <Button colorScheme="red" onClick={()=>updateCartRequest(request, 'reject')}>Decline</Button>
+                          </Stack>
+                        </Td>
+                      ) : (
+                        <Td>{request.status}</Td>
+                      )
+                    }
+                  </Tr>
+                ))):(
+                    <Tr>
+                    <Td colSpan={6}>No pending requests found.</Td>
+                    </Tr>
+  
+                )}
                 
                 {/* Display User Payment Requests here */}
               </Tbody>
@@ -77,15 +98,7 @@ function SalesOrders() {
               </Thead>
               <Tbody>
                 {/* Display All Dealer Car Sales here */}
-                {/* {orders?.map((order) => (
-                  <Tr key={order.id}>
-                    <Td>{order.order_id}</Td>
-                    <Td>{order.carName}</Td>
-                    <Td>{order.dealerName}</Td>
-                    <Td>{moment(order.sale_date).format('DD-MM-YYYY')}</Td>
-                    <Td>{order.status}</Td>
-                  </Tr>
-                ))} */}
+               
               </Tbody>
             </Table>
           </TabPanel>

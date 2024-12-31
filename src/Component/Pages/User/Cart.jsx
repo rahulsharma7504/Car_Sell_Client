@@ -15,7 +15,7 @@ import EndPoint from '../../Auth/Endpoint';
 import { useOrder } from '../../Context/OrderContext';
 
 const CartPage = () => {
-  const { cartData ,fetchCartRequestMade} = useCart();
+  const { cartData ,handleDeleteCartItem } = useCart();
   const {handlePayment}= useOrder()
   const toast = useToast();
   const User = JSON.parse(localStorage.getItem("userData"))?.user;
@@ -75,15 +75,17 @@ const CartPage = () => {
                 <Text color="gray.500">${item?.price}</Text>
                 <Text>Status: {item?.status || 'Pending Approval'}</Text>
               </Box>
+              {
+                item.status=== 'reject' && (
+                  <Button color="red.500"><b>Rejected</b></Button>
+                )
+              }
               <Button
-                colorScheme="blue"
-                size="sm"
+                colorScheme="blue"size="sm" 
                 onClick={() => handlerCartRequestApproval(item)}
                 isDisabled={item?.status === 'Approve' || item?.status === 'approve'}
-              >
-                Request Approval
-              </Button>
-
+                >Request Approval</Button>
+             
               <Button
                 colorScheme="teal"
                 size="sm"
@@ -92,10 +94,16 @@ const CartPage = () => {
               >
                 Make Payment
               </Button>
+              <Button
+                colorScheme="red"
+                size="sm"
+                onClick={() => handleDeleteCartItem(item.id)}
+              >Remove</Button>
 
 
 
             </Stack>
+
           ))}
         </Box>
 
@@ -105,6 +113,11 @@ const CartPage = () => {
           <Divider mb={4} />
           <Text fontWeight="bold" fontSize="lg" mb={2}>
             Total: ${cartData.reduce((acc, item) => acc + parseFloat(item.price), 0)}
+            {
+              cartData.some(item=>item.status==='reject') && (
+                <Text color="red.500"> (Some items rejected)</Text>
+              )
+            }
           </Text>
         </Box>
       </Box>

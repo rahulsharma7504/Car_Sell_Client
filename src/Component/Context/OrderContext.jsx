@@ -12,27 +12,14 @@ export const OrderProvider = ({ children }) => {
 
   const toast = useToast();
   const [orderData, setOrderData] = useState(null); // Initially null
-  const [loading, setLoading] = useState(true); // Track loading state
-  const [cartPending, setCartPending] = useState([]); // Track cart pending status
 
-  const cartPendingRequests = async () => {
-    try {
-      const dealerId = JSON.parse(localStorage.getItem("userData"))?.dealer?.id
-      const res = await axios.get(`${EndPoint.URL}/dealers/cart-request/${dealerId}`);
-      setCartPending(res.data);
-      console.log(res.data);
-    } catch (error) {
-      console.error("Error fetching cart pending requests:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
+
+
+ 
 
   
 
-  useEffect(() => {
-    cartPendingRequests();
-  }, []);
+
 
   const updateStatus = async (order_id, status, userId, carId) => {
     try {
@@ -66,14 +53,15 @@ export const OrderProvider = ({ children }) => {
 
   const handlePayment = async (item) => {
     try {
+      
       const User = JSON.parse(localStorage.getItem("userData"))?.user;
-
       // 1. Create an order from the backend
-      const response = await axios.post(`${EndPoint.URL}/users/create-order`, {
+      const response = await axios.post(`${EndPoint.URL}/users/update-order`, {
         amount: item.price, // Pass amount here
-        currency: 'INR',
+        currency: 'USD',
         userId: item.user_id,
         carId: item.id,
+        dealerId: item.dealer_id
       });
 
       const { id, amount, currency } = response.data.order;
@@ -119,7 +107,7 @@ export const OrderProvider = ({ children }) => {
 
 
   return (
-    <OrderContext.Provider value={{ cartPending, updateStatus, handlePayment, orderData, loading }}>
+    <OrderContext.Provider value={{  updateStatus, handlePayment, orderData }}>
       {children}
     </OrderContext.Provider>
   );

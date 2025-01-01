@@ -14,7 +14,20 @@ export const OrderProvider = ({ children }) => {
   const [orderData, setOrderData] = useState(null); // Initially null
 
 
-
+const fetchOrders = async () => {
+  try {
+    const dealerId = JSON.parse(localStorage.getItem('userData'))?.dealer?.id;
+    const res = await axios.get(`${EndPoint.URL}/dealers/orders/${dealerId}`);
+    setOrderData(res.data);
+    console.log(res.data)
+  } catch (error) {
+   
+    console.error("Error fetching orders:", error);
+  }
+  }
+  useEffect(()=>{
+    fetchOrders()
+  },[])
  
 
   
@@ -56,15 +69,15 @@ export const OrderProvider = ({ children }) => {
       
       const User = JSON.parse(localStorage.getItem("userData"))?.user;
       // 1. Create an order from the backend
-      const response = await axios.post(`${EndPoint.URL}/users/update-order`, {
+      const response = await axios.post(`${EndPoint.URL}/users/make-payment`, {
         amount: item.price, // Pass amount here
-        currency: 'USD',
+        currency: 'INR',
         userId: item.user_id,
         carId: item.id,
         dealerId: item.dealer_id
       });
 
-      const { id, amount, currency } = response.data.order;
+      const { notes, amount, currency } = response.data.order;
 
       // 2. Open Razorpay checkout
       const options = {
@@ -73,7 +86,7 @@ export const OrderProvider = ({ children }) => {
         currency: currency,
         name: 'R.Sharma Production',
         description: 'Test Transaction',
-        order_id: id,
+        userId:notes.userId,
         handler: async function (response) {
           // Payment success, send details to backend for verification
           const paymentDetails = {
@@ -105,6 +118,8 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+
+  
 
   return (
     <OrderContext.Provider value={{  updateStatus, handlePayment, orderData }}>

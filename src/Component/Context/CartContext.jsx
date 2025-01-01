@@ -18,7 +18,6 @@ export const CartProvider = ({ children }) => {
         try {
             const res = await axios.get(`${EndPoint.URL}/users/cart-details/${User?.id}`);
             setCartData(res?.data || []);
-            console.log(res.data);
         } catch (error) {
             toast({
                 title: "Failed to load cart details",

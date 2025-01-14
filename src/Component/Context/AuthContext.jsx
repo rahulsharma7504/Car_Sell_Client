@@ -1,9 +1,16 @@
 import { useContext, createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMatrix } from '../Pages/Admin/MetrixContext';
+import { useDealer } from '../Pages/Dealer/DealerContext';
+import { useCart } from './CartContext';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const {cartPendingRequests}=useCart();
+  const {TotalCar}=useDealer()
+
+  const {getMetrix}=useMatrix()
   const navigate = useNavigate();
 
   // Initialize user state with default values
@@ -31,26 +38,37 @@ export const AuthProvider = ({ children }) => {
     // Store the token and user data in localStorage
     localStorage.setItem('token', token);
     localStorage.setItem('userData', JSON.stringify(userData));
-
+  
     // Update the user state
     setUser({
       isAuthenticated: true,
       data: userData,
     });
+  
+    // Check if the user or dealer role is present
     const { user, dealer } = userData;
+  
     if (user) {
+      // User role check
       if (user.role === 'admin') {
-        navigate('/admin-dashboard');
+        getMetrix();
+
+        navigate('/admin-dashboard'); // Admin redirects here
       } else {
-        navigate('/');
+        navigate('/'); // Non-admin user redirects here
       }
-    }else if(dealer){
-      navigate('/dealer-dashboard');
+    } else if (dealer) {
+      TotalCar();
+      cartPendingRequests();
+      // Dealer role check
+      navigate('/dealer-dashboard'); // Dealer redirects here
+    } else {
+      // If neither user nor dealer is found
+      console.log("Role not found in userData", userData);
+      navigate('/login'); // Redirect to login if no role matches
     }
-
-
-    // Redirect user to a protected route (e.g., dashboard)
   };
+  
 
   // Logout function to clear user state and localStorage
   const logout = () => {

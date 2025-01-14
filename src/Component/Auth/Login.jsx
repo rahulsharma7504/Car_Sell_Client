@@ -15,57 +15,76 @@ import {
   Container,
   Text,
   Link,
+  Spinner,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { ViewIcon, ViewOffIcon, EmailIcon } from '@chakra-ui/icons';
 import axios from 'axios'; // Import Axios
-import EndPoint from './Endpoint'
-import { useAuth } from '../Context/AuthContext';
+import EndPoint from './Endpoint';
+import { useAuth } from '../Context/AuthContext'; // Import context for auth state
 import { useNavigate } from 'react-router-dom';
+import LoadingComponent from '../Loading/Loading';
+
 const MotionBox = motion(Box);
 
 function Login() {
-
-const navigate=useNavigate();
-  const { user,setUser ,login} = useAuth(); // Use AuthContext hook to handle login
+  const navigate = useNavigate();
+  const { login } = useAuth(); // Use login function from AuthContext
   const [email, setEmail] = useState(''); // State for email
   const [password, setPassword] = useState(''); // State for password
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // State to manage loading status
   const toast = useToast();
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
+  // Validation check
+  const isFormValid = () => email.trim() !== '' && password.trim() !== '';
+
   const handleLogin = async () => {
+    if (!isFormValid()) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please fill in both email and password.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
       const response = await axios.post(`${EndPoint.URL}/users/login`, {
         email,
         password,
       });
-  
+
       if (response && response.data) {
-        // Ensure the response contains the expected userData and token
-        if (response.data && response.data.token) {
+        if (response.data.token) {
+          // If successful, login using the provided token
           login(response.data, response.data.token);
-          
-         
+
+          toast({
+            title: 'Login Successful!',
+            description: "You've successfully logged in.",
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
         } else {
-          console.error('Invalid response data:', response.data);
+          toast({
+            title: 'Invalid Credentials',
+            description: 'Please check your email and password.',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
         }
-      } else {
-        console.error('Response is not valid:', response);
       }
-  
-      // Show success toast on successful login
-      toast({
-        title: 'Login Successful!',
-        description: "You've successfully logged in.",
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-  
     } catch (error) {
-      // Show error toast on login failure
+      // Handle error if the API call fails
       toast({
         title: 'Login Failed',
         description: error.response?.data?.message || 'An error occurred during login.',
@@ -73,11 +92,17 @@ const navigate=useNavigate();
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false); // Disable the loading state after the request completes
     }
   };
-  
 
   return (
+    <>
+
+    {
+      isLoading && <LoadingComponent/>
+    }
     <Container centerContent>
       <MotionBox
         maxW="md"
@@ -100,7 +125,7 @@ const navigate=useNavigate();
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} // Update state on change
+                onChange={(e) => setEmail(e.target.value)}
               />
               <InputRightElement>
                 <EmailIcon color="gray.500" />
@@ -115,7 +140,7 @@ const navigate=useNavigate();
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} // Update state on change
+                onChange={(e) => setPassword(e.target.value)}
               />
               <InputRightElement>
                 <IconButton
@@ -134,6 +159,8 @@ const navigate=useNavigate();
             onClick={handleLogin}
             w="full"
             mt={4}
+            isLoading={isLoading} // Show loading state on button
+            loadingText="Logging in"
           >
             Login
           </Button>
@@ -147,6 +174,7 @@ const navigate=useNavigate();
         </VStack>
       </MotionBox>
     </Container>
+    </>
   );
 }
 

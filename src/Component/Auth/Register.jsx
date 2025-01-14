@@ -8,25 +8,24 @@ import {
   FormLabel,
   Input,
   Select,
-  InputRightElement,
-
   Textarea,
   useToast,
   VStack,
   Icon,
-  useBreakpointValue,
 } from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon, EmailIcon, LockIcon } from '@chakra-ui/icons';
-import EndPoint from './Endpoint'
+import { MdPerson, MdEmail, MdLock, MdPhone, MdLocationOn, MdCardTravel } from 'react-icons/md';
 import { motion } from 'framer-motion';
-import { MdPerson, MdEmail, MdLock, MdPhone, MdLocationOn, MdCardTravel, MdImage } from 'react-icons/md';
+import EndPoint from './Endpoint';  // Assume this is the correct path
 import { useNavigate } from 'react-router-dom';
 
 // Define motion component
 const MotionBox = motion(Box);
 
 const Register = () => {
-const navigate=useNavigate();
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  // Form states
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,13 +34,35 @@ const navigate=useNavigate();
   const [phone, setPhone] = useState('');
   const [licenseNumber, setLicenseNumber] = useState('');
   const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const toast = useToast();
+  // Form validation
+  const isFormValid = () => {
+    if (!username || !email || !password || !role) return false;
+    if (role === 'dealer' && (!address || !phone || !licenseNumber)) return false;
+    return true;
+  };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form data before submitting
+    if (!isFormValid()) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please fill all required fields.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    // Set loading state
+    setIsLoading(true);
+
     const userData = { username, email, password, role, image };
-    console.log(userData);
     if (role === 'dealer') {
       userData.address = address;
       userData.phone = phone;
@@ -55,51 +76,58 @@ const navigate=useNavigate();
       formData.append('password', userData.password);
       formData.append('role', userData.role);
       if (image) formData.append('image', image);
+      
       if (role === 'dealer') {
         formData.append('address', userData.address);
         formData.append('phone', userData.phone);
         formData.append('licenseNumber', userData.licenseNumber);
       }
-      console.log(formData);
 
       const response = await axios.post(`${EndPoint.URL}/users/register`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      toast({
-        title: response.data.message,
-        description: "You've registered successfully.",
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-      navigate('/login');
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setRole('user');
-      setAddress('');
-      setPhone('');
-      setLicenseNumber('');
-      setImage(null);
+
+      if (response.status === 201) {
+        toast({
+          title: 'Registration Successful',
+          description: "You've registered successfully.",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+        navigate('/login');
+        // Reset form after successful submission
+        resetForm();
+      }
 
     } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Something went wrong.';
       toast({
-        title: error.response.data.message,
-        description: 'Something went wronge.',
+        title: 'Registration Failed',
+        description: errorMessage,
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Reset form fields
+  const resetForm = () => {
+    setUsername('');
+    setEmail('');
+    setPassword('');
+    setRole('user');
+    setAddress('');
+    setPhone('');
+    setLicenseNumber('');
+    setImage(null);
+  };
+
   return (
-    <Container
-      maxW="container.sm"
-      py={8}
-      bgSize="cover"
-      bgPosition="center"
-    >
+    <Container maxW="container.sm" py={8}>
       <MotionBox
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -128,7 +156,6 @@ const navigate=useNavigate();
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               leftIcon={<Icon as={MdEmail} />}
-
             />
           </FormControl>
           <FormControl id="password" isRequired>
@@ -155,7 +182,7 @@ const navigate=useNavigate();
 
           {role === 'dealer' && (
             <>
-              <FormControl id="address">
+              <FormControl id="address" isRequired>
                 <FormLabel>Address</FormLabel>
                 <Textarea
                   value={address}
@@ -164,7 +191,7 @@ const navigate=useNavigate();
                   leftIcon={<Icon as={MdLocationOn} />}
                 />
               </FormControl>
-              <FormControl id="phone">
+              <FormControl id="phone" isRequired>
                 <FormLabel>Phone</FormLabel>
                 <Input
                   type="text"
@@ -174,7 +201,7 @@ const navigate=useNavigate();
                   leftIcon={<Icon as={MdPhone} />}
                 />
               </FormControl>
-              <FormControl id="licenseNumber">
+              <FormControl id="licenseNumber" isRequired>
                 <FormLabel>License Number</FormLabel>
                 <Input
                   type="text"
@@ -196,12 +223,16 @@ const navigate=useNavigate();
             />
             {image && (
               <Box mt={4} textAlign="center">
-                <img src={URL.createObjectURL(image)} alt="Profile preview" boxSize="40px" objectFit="cover" />
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt="Profile preview"
+                  style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                />
               </Box>
             )}
           </FormControl>
 
-          <Button colorScheme="purple" onClick={handleSubmit}>
+          <Button colorScheme="purple" onClick={handleSubmit} isLoading={isLoading}>
             Register
           </Button>
         </VStack>

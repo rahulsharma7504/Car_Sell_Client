@@ -29,12 +29,6 @@ import Endpoint from '../../Auth/Endpoint';
 import axios from 'axios';
 import { useMatrix } from './MetrixContext';
 
-// Mock dealer data
-const mockDealers = [
-  { id: 1, name: 'Dealer A', email: 'dealerA@example.com', status: 'Pending', contact: '123-456-7890', license: 'Verified' },
-  { id: 2, name: 'Dealer B', email: 'dealerB@example.com', status: 'Verified', contact: '321-654-0987', license: 'Not Verified' },
-  // Add more dealers as needed
-];
 
 function ManageDealers() {
   const { setTotelDealer } = useMatrix();
@@ -157,8 +151,8 @@ function ManageDealers() {
                 onChange={(e) => setSelectedDealer({ ...selectedDealer, verification_status: e.target.value })}
               >
                 <option value="verification">Verification</option>
-                <option value="Reject">Reject</option>
-                <option value="Verified"> Verified</option>
+                <option value="reject">Reject</option>
+                <option value="verify"> Verify</option>
               </Select>
             </FormControl>
             <FormControl id="status" mb={4}>

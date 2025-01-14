@@ -20,7 +20,7 @@ const Layout = ({ children }) => {
     // Render based on user role
     const User = user?.data?.user;
     const Dealer = user?.data?.dealer;
-    const isAdmin = user?.data?.user?.role== 'admin';
+    const isAdmin = user?.data?.user?.role == 'admin';
 
     if (isAdmin) {
       return <AdminNavbar />; // Admin Navbar
@@ -42,9 +42,10 @@ const Layout = ({ children }) => {
         {children}
       </Container>
 
-      <Flex as="footer"  p={4} style={{backgroundColor:'black'}} color="white" justify="center">
+      {/* <Flex as="footer" p={4} style={{ backgroundColor: 'black', position: 'fixed', bottom: 0, width: '100%' }} color="white" justify="center">
         <Text>© 2024 Car Selling App. All rights reserved.</Text>
-      </Flex>
+      </Flex> */}
+
     </Box>
   );
 };

@@ -38,11 +38,17 @@ function ManageUsers() {
   const [editMode, setEditMode] = useState(false);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const role = JSON.parse(localStorage.getItem('userData'))?.user?.role;
 
   useEffect(() => {
-    fetchUsers();
-
+    if(role == 'admin') {
+      fetchUsers();
+    } else {
+      toast({ title: 'You are not authorized to view this page.', status: 'error' });
+    }
+    
   }, [toast]);
+  
   const fetchUsers = async () => {
     try {
       const res = await axios.get(`${EndPoint.URL}/users/all-users/${user.data.user.id}`);

@@ -16,7 +16,6 @@ function ProtectedRoute({ children, role }) {
     return <NotFound />; // Redirect unauthorized roles to 404 page
   }
 
-  // Render the children for authorized roles
   return children;
 }
 

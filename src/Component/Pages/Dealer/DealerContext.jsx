@@ -13,8 +13,14 @@ const DealerProvider = ({ children }) => {
     const [totalSales, setTotalSales] = useState(10);     // Dummy initial value
 
     // Fetch data for total cars when the component mounts
+  const role = JSON.parse(localStorage.getItem('userData'))?.dealer?.role;
+    
     useEffect(() => {
-        TotalCar();
+        if(role === "dealer")  // Only fetch data if user is a dealer
+        {
+            TotalCar();
+        }
+
       },[]);
     const TotalCar =  async() => {
         try {
@@ -34,7 +40,7 @@ const DealerProvider = ({ children }) => {
     // Return the context provider with values
     return (
         <DealerContext.Provider 
-            value={{ totalCars, totalRequest, totalSales, setTotalCars, setTotalRequest, setTotalSales }}
+            value={{ totalCars, totalRequest,TotalCar, totalSales, setTotalCars, setTotalRequest, setTotalSales }}
         >
             {children}
         </DealerContext.Provider>

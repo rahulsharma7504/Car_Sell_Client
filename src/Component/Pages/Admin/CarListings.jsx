@@ -15,6 +15,7 @@ import EndPoint from '../../Auth/Endpoint';
 import axios from 'axios';
 import { useMatrix } from './MetrixContext';
 import { useAuth } from '../../Context/AuthContext';
+import LoadingComponent from './../../Loading/Loading';
 
 const CarListing = () => {
   const {user}=useAuth()
@@ -23,15 +24,19 @@ const CarListing = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const role = JSON.parse(localStorage.getItem('userData'))?.user?.role;
+
   useEffect(() => {
-    fetchData();
-  }, [user]);
+    // Fetch car data only if user is a dealer
+    if (role === 'admin') {
+      fetchData();
+    }
+  }, []);
 
   const fetchData = async () => {
     try {
       const response = await axios.get(`${EndPoint.URL}/dealers/cars`);
       setCars(response.data.cars); // Assuming 'cars' is an array in your API response
-      console.log(typeof response.data.cars[0].image_url);
       setTotelCar(response.data.cars.length); // Update total car count in matrix context
       setLoading(false);
     } catch (err) {
@@ -42,7 +47,7 @@ const CarListing = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent/>
   }
 
   if (error) {

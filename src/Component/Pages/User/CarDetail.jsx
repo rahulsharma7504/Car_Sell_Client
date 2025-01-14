@@ -34,9 +34,7 @@ const CarDetailPage = () => {
   const { id } = useParams();
   const [carDetails, setCarDetails] = useState(null);
 
-  useEffect(() => {
-    fetchCarData();
-  }, []);
+ 
 
   const fetchCarData = async () => {
     try {
@@ -51,7 +49,7 @@ const CarDetailPage = () => {
   const handleDateChange = (date) => {
 
     setStartDate(date); // Set selected date
-    handleBooking()
+    handleBooking() 
     setIsOpen(false); // Close the date picker after selection
   };
   //For Booking a Car
@@ -98,6 +96,9 @@ const CarDetailPage = () => {
     window.location.href = `https://wa.me/${phone}?text=Hello!%20I%20want%20to%20connect%20with%20you.`;
   };
 
+  useEffect(() => {
+    fetchCarData();
+  }, []);
   return (
     <Box p={5}>
       <Flex direction="column" align="center" mb={5}>
@@ -182,7 +183,7 @@ const CarDetailPage = () => {
         <Button leftIcon={<FaPhone />} onClick={()=>handleClick(carDetails.contact_number)} colorScheme="blue">
           Contact Dealer
         </Button>
-        <Button marginLeft={2} onClick={()=> handleCart(id,carDetails?.dealer_id,user.data.user.id)} colorScheme="green">
+        <Button marginLeft={2} onClick={()=> handleCart(id,carDetails?.dealer_id,user?.data?.user.id)} colorScheme="green">
           Save To cart
         </Button>
       </Flex>

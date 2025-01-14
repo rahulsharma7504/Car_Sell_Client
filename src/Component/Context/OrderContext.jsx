@@ -19,7 +19,6 @@ const fetchOrders = async () => {
     const dealerId = JSON.parse(localStorage.getItem('userData'))?.dealer?.id;
     const res = await axios.get(`${EndPoint.URL}/dealers/orders/${dealerId}`);
     setOrderData(res.data);
-    console.log(res.data)
   } catch (error) {
    
     console.error("Error fetching orders:", error);
@@ -81,7 +80,7 @@ const fetchOrders = async () => {
 
       // 2. Open Razorpay checkout
       const options = {
-        key: 'rzp_test_VntZm15bTqdhSc', // Add your Razorpay key here
+        key:  process.env.REACT_APP_RAZORPAY_KEY, // Add your Razorpay key here
         amount: amount,
         currency: currency,
         name: 'R.Sharma Production',

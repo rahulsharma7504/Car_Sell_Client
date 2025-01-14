@@ -9,26 +9,10 @@ function Dashboard() {
 
 
   const [metrics, setMetrics] = useState({
-    totalUsers: 0,
-    totalDealers: 0,
-    totalCarListings: 0,
-    pendingDealerApprovals: 0,
     recentActivities: [],
     showRecentActivities: false
   });
 
-  useEffect(() => {
-    async function fetchMetrics() {
-      try {
-        const response = await axios.get('/api/admin/metrics'); // Replace with your API endpoint
-        setMetrics(response.data);
-      } catch (error) {
-        console.error('Error fetching metrics:', error);
-      }
-    }
-    
-    fetchMetrics();
-  }, []);
 
   return (
     <Box p={4}>

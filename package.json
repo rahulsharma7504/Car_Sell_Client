@@ -29,9 +29,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "homepage": "https://github.com/rahulsharma7504/Car_Sell_Client.git",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

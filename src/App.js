@@ -32,12 +32,14 @@ import ProtectedRoute from './Component/Auth/ProtectedRoute';
 import MatrixProvider from './Component/Pages/Admin/MetrixContext';
 import DealerProvider from './Component/Pages/Dealer/DealerContext';
 import { CartProvider } from './Component/Context/CartContext';
+import { OrderProvider } from './Component/Context/OrderContext';
 
 function App() {
   return (
     <Router>
       <MatrixProvider>
         <CartProvider>
+          <OrderProvider>
         <DealerProvider>
           <AuthProvider>
             <Layout>
@@ -75,7 +77,8 @@ function App() {
             </Layout>
           </AuthProvider>
         </DealerProvider>
-        </CartProvider>
+        </OrderProvider>
+        </CartProvider> 
       </MatrixProvider>
 
     </Router>

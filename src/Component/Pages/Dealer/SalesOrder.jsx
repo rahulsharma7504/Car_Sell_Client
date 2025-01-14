@@ -27,7 +27,7 @@ function SalesOrders() {
   const { cartPending, updateCartRequest } = useCart();
 
   // Local state for loading and error management
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
 

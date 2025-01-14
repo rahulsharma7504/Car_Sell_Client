@@ -152,13 +152,11 @@ export const CartProvider = ({ children }) => {
     useEffect(() => {
         if (role === "dealer") {
             cartPendingRequests();
-        } else {
-            handleCartDetails();
-        }
-    }, []);
+        } 
+    }, [role]);
 
     useEffect(() => {
-        if (User) {
+        if (User && User.role === "user") {
             handleCartDetails();
         }
     }, []);

@@ -14,22 +14,28 @@ export const OrderProvider = ({ children }) => {
   const [orderData, setOrderData] = useState(null); // Initially null
 
 
-const fetchOrders = async () => {
-  try {
-    const dealerId = JSON.parse(localStorage.getItem('userData'))?.dealer?.id;
-    const res = await axios.get(`${EndPoint.URL}/dealers/orders/${dealerId}`);
-    setOrderData(res.data);
-  } catch (error) {
-   
-    console.error("Error fetching orders:", error);
-  }
-  }
-  useEffect(()=>{
-    fetchOrders()
-  },[])
- 
+  const fetchOrders = async () => {
+    try {
+      const dealerId = JSON.parse(localStorage.getItem('userData'))?.dealer?.id;
+      const res = await axios.get(`${EndPoint.URL}/dealers/orders/${dealerId}`);
+      setOrderData(res.data);
+    } catch (error) {
 
-  
+      console.error("Error fetching orders:", error);
+    }
+  }
+
+  const Role = JSON.parse(localStorage.getItem("userData"))?.dealer?.role;
+
+  useEffect(() => {
+    if (Role === 'dealer') {
+      fetchOrders();
+
+    }
+  }, [])
+
+
+
 
 
 
@@ -65,7 +71,7 @@ const fetchOrders = async () => {
 
   const handlePayment = async (item) => {
     try {
-      
+
       const User = JSON.parse(localStorage.getItem("userData"))?.user;
       // 1. Create an order from the backend
       const response = await axios.post(`${EndPoint.URL}/users/make-payment`, {
@@ -80,12 +86,12 @@ const fetchOrders = async () => {
 
       // 2. Open Razorpay checkout
       const options = {
-        key:  process.env.REACT_APP_RAZORPAY_KEY, // Add your Razorpay key here
+        key: process.env.REACT_APP_RAZORPAY_KEY, // Add your Razorpay key here
         amount: amount,
         currency: currency,
         name: 'R.Sharma Production',
         description: 'Test Transaction',
-        userId:notes.userId,
+        userId: notes.userId,
         handler: async function (response) {
           // Payment success, send details to backend for verification
           const paymentDetails = {
@@ -118,10 +124,10 @@ const fetchOrders = async () => {
   };
 
 
-  
+
 
   return (
-    <OrderContext.Provider value={{  updateStatus, handlePayment, orderData }}>
+    <OrderContext.Provider value={{fetchOrders, updateStatus, handlePayment, orderData }}>
       {children}
     </OrderContext.Provider>
   );

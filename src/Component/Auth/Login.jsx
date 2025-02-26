@@ -22,7 +22,7 @@ import { ViewIcon, ViewOffIcon, EmailIcon } from '@chakra-ui/icons';
 import axios from 'axios'; // Import Axios
 import EndPoint from './Endpoint';
 import { useAuth } from '../Context/AuthContext'; // Import context for auth state
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import LoadingComponent from '../Loading/Loading';
 
 const MotionBox = motion(Box);
@@ -100,80 +100,85 @@ function Login() {
   return (
     <>
 
-    {
-      isLoading && <LoadingComponent/>
-    }
-    <Container centerContent>
-      <MotionBox
-        maxW="md"
-        p="8"
-        borderWidth="1px"
-        borderRadius="lg"
-        boxShadow="lg"
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <VStack spacing={6} align="stretch">
-          <Heading as="h2" size="lg" textAlign="center" color="purple.700">
-            Car Selling App Login
-          </Heading>
-          <FormControl id="email" isRequired>
-            <FormLabel>Email address</FormLabel>
-            <InputGroup>
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <InputRightElement>
-                <EmailIcon color="gray.500" />
-              </InputRightElement>
-            </InputGroup>
-          </FormControl>
-
-          <FormControl id="password" isRequired>
-            <FormLabel>Password</FormLabel>
-            <InputGroup>
-              <Input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <InputRightElement>
-                <IconButton
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                  onClick={handleClickShowPassword}
-                  variant="ghost"
+      {
+        isLoading && <LoadingComponent />
+      }
+      <Container centerContent>
+        <MotionBox
+          maxW="md"
+          p="8"
+          borderWidth="1px"
+          borderRadius="lg"
+          boxShadow="lg"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <VStack spacing={6} align="stretch">
+            <Heading as="h2" size="lg" textAlign="center" color="purple.700">
+              Car Selling App Login
+            </Heading>
+            <FormControl id="email" isRequired>
+              <FormLabel>Email address</FormLabel>
+              <InputGroup>
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-              </InputRightElement>
-            </InputGroup>
-          </FormControl>
+                <InputRightElement>
+                  <EmailIcon color="gray.500" />
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
 
-          <Button
-            colorScheme="purple"
-            size="lg"
-            onClick={handleLogin}
-            w="full"
-            mt={4}
-            isLoading={isLoading} // Show loading state on button
-            loadingText="Logging in"
-          >
-            Login
-          </Button>
+            <FormControl id="password" isRequired>
+              <FormLabel>Password</FormLabel>
+              <InputGroup>
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <InputRightElement>
+                  <IconButton
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    icon={showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                    onClick={handleClickShowPassword}
+                    variant="ghost"
+                  />
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
 
-          <HStack justifyContent="center">
-            <Text fontSize="sm">Don't have an account?</Text>
-            <Link href="/register" color="purple.500" fontWeight="bold">
-              Sign Up
-            </Link>
-          </HStack>
-        </VStack>
-      </MotionBox>
-    </Container>
+            <Button
+              colorScheme="purple"
+              size="lg"
+              onClick={handleLogin}
+              w="full"
+              mt={4}
+              isLoading={isLoading} // Show loading state on button
+              loadingText="Logging in"
+            >
+              Login
+            </Button>
+
+            <HStack justifyContent="center">
+              <VStack spacing={1}>
+                <Text fontSize="sm" >Don't have an account?</Text>
+                <NavLink to="/forgot-password" className="forget-link" color="purple.500" fontSize="sm">
+                  Forgot Password?
+                </NavLink>
+              </VStack>
+              <NavLink to="/register" className="forget-link" color="purple.500" fontWeight="bold">
+                Sign Up
+              </NavLink>
+            </HStack>
+          </VStack>
+        </MotionBox>
+      </Container>
     </>
   );
 }

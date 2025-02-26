@@ -33,6 +33,8 @@ import MatrixProvider from './Component/Pages/Admin/MetrixContext';
 import DealerProvider from './Component/Pages/Dealer/DealerContext';
 import { CartProvider } from './Component/Context/CartContext';
 import { OrderProvider } from './Component/Context/OrderContext';
+import Forget from './Component/Auth/Forget';
+import ResetPassword from './Component/Auth/Reset_pass';
 
 function App() {
   return (
@@ -47,6 +49,8 @@ function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<Forget />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
 
                 {/* Admin Routes */}
                 <Route path="/admin-dashboard" element={<ProtectedRoute role="admin"><Admin /></ProtectedRoute>} />

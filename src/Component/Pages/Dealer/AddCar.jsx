@@ -38,7 +38,7 @@ function AddNewCar() {
     setImages(Array.from(e.target.files));
   };
 
-  const dealerId = JSON.parse(localStorage.getItem('userData')).dealer.id;
+  const dealerId = JSON.parse(localStorage.getItem('userData'))?.dealer?.id;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,6 +99,8 @@ function AddNewCar() {
         duration: 3000,
         isClosable: true,
       });
+      setIsLoading(false); // stop loading state
+      
     } finally {
       setIsLoading(false); // Stop loading state
     }
@@ -211,15 +213,16 @@ function AddNewCar() {
 
           <Flex mt={4} justify="flex-end">
             <Button
-              colorScheme="blue"
-              type="submit"
-              spinnerPlacement="end"
-              rightIcon={<Spinner size="sm" />}
-              mr={3}
-              isDisabled={isLoading}
-            >
-              Save
-            </Button>
+  colorScheme="blue"
+  type="submit"
+  isLoading={isLoading} // Use Chakra's built-in `isLoading` prop
+  spinnerPlacement="end"
+  rightIcon={isLoading ? <Spinner size="sm" /> : null} // Conditionally render Spinner
+  mr={3}
+  isDisabled={isLoading}
+>
+  Save
+</Button>
             <Button variant="outline" onClick={handleReset} isDisabled={isLoading}>
               Reset
             </Button>

@@ -100,9 +100,6 @@ function Login() {
   return (
     <>
 
-      {
-        isLoading && <LoadingComponent />
-      }
       <Container centerContent>
         <MotionBox
           maxW="md"
